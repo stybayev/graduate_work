@@ -1,22 +1,16 @@
-version: '3.7'
+
 
 x-app: &app
   env_file:
     - .env
   restart: always
 
-
 volumes:
-  esdata:
   dbdata:
   redis_data:
-  static:
-  media:
-  minio_storage:
   kafka_0_data:
   kafka_1_data:
   kafka_2_data:
-  flasgger_static:
   es_logs:
 
 services:
@@ -57,136 +51,6 @@ services:
       - logstash
       - elasticsearch
     command: alembic upgrade head
-
-  django_admin:
-    build: django_admin
-    image: app-django-admin:dev
-    logging:
-      driver: "gelf"
-      options:
-        gelf-address: "udp://localhost:${LOGSTASH_PORT}"
-        tag: "django-admin-service"
-    volumes:
-      - media:/opt/app/media
-      - static:/opt/app/static
-    depends_on:
-      - db
-      - logstash
-      - elasticsearch
-    env_file:
-      - .env
-    expose:
-      - ${DJANGO_PORT}
-    restart: unless-stopped
-
-  app:
-    container_name: app
-    build: ./app
-    <<: *app
-    logging:
-      driver: "gelf"
-      options:
-        gelf-address: "udp://localhost:5044"
-        tag: "app-service"
-    volumes:
-      - .:/app
-    restart: always
-    expose:
-      - ${UVICORN_PORT}
-    ports:
-      - ${UVICORN_PORT}:${UVICORN_PORT}
-    depends_on:
-      - db
-      - elasticsearch
-      - redis
-      - logstash
-      - elasticsearch_db
-
-  file_api:
-    container_name: file_api
-    build: ./file_api
-    <<: *app
-    logging:
-      driver: "gelf"
-      options:
-        gelf-address: "udp://localhost:${LOGSTASH_PORT}"
-        tag: "file-api-service"
-    volumes:
-      - .:/file_api
-    ports:
-      - "8081:8081"
-    depends_on:
-      - minio
-      - db
-      - logstash
-      - elasticsearch
-
-  ugc_service:
-    container_name: ugc_service
-    build: ./ugc_service
-    <<: *app
-    logging:
-      driver: "gelf"
-      options:
-        gelf-address: "udp://localhost:${LOGSTASH_PORT}"
-        tag: "ugc-service"
-    volumes:
-      - .:/ugc_service
-      - flasgger_static:/usr/local/lib/python3.10/site-packages/flasgger/ui3/static
-    ports:
-      - "8084:8084"
-    depends_on:
-      - db
-      - kafka-0
-      - kafka-1
-      - kafka-2
-      - logstash
-      - elasticsearch
-
-    healthcheck:
-      test: [ "CMD-SHELL", "nc -z kafka-0 9092 || exit 1" ]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 10s
-
-  etl:
-    container_name: etl
-    build: ./etl/postgres_to_es
-    env_file:
-      - .env
-    <<: *app
-    logging:
-      driver: "gelf"
-      options:
-        gelf-address: "udp://localhost:${LOGSTASH_PORT}"
-        tag: "etl-service"
-    depends_on:
-      - db
-      - elasticsearch
-      - redis
-      - logstash
-      - elasticsearch_db
-
-  elasticsearch_db:
-    image: elasticsearch:8.6.2
-    logging:
-      driver: "gelf"
-      options:
-        gelf-address: "udp://localhost:${LOGSTASH_PORT}"
-        tag: "elasticsearch_db"
-    environment:
-      - discovery.type=single-node
-      - xpack.security.enabled=false
-      - "ES_JAVA_OPTS=-Xms200m -Xmx200m"
-    expose:
-      - 9200
-    ports:
-      - ${ELASTIC_PORT}:9200
-    volumes:
-      - esdata:/usr/share/elasticsearch/data
-    depends_on:
-      - logstash
 
   db:
     image: ghcr.io/dbsystel/postgresql-partman:14
@@ -240,38 +104,13 @@ services:
       - ./tmp/logs/nginx/:/var/log/nginx/
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./nginx/configs/:/etc/nginx/conf.d/:ro
-      - static:/data/static/:ro
-      - flasgger_static:/usr/share/nginx/html/flasgger_static/:ro
-      - flasgger_static:/data/flasgger_static/:ro
     depends_on:
-      - app
       - auth
       - rate_limit
       - logstash
       - elasticsearch
     ports:
       - "80:80"
-
-  minio:
-    image: minio/minio
-    <<: *app
-    logging:
-      driver: "gelf"
-      options:
-        gelf-address: "udp://localhost:${LOGSTASH_PORT}"
-        tag: "minio"
-    ports:
-      - "9000:9000"
-      - "9001:9001"
-    environment:
-      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
-      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
-    volumes:
-      - minio_storage:/data
-    command: server --console-address ":9001" /data
-    depends_on:
-      - logstash
-      - elasticsearch
 
   jaeger:
     image: jaegertracing/all-in-one:latest
@@ -301,7 +140,6 @@ services:
     volumes:
       - .:/rate_limit
     depends_on:
-      - app
       - auth
       - logstash
       - elasticsearch
@@ -331,7 +169,6 @@ services:
     depends_on:
       - logstash
       - elasticsearch
-
 
   kafka-1:
     image: bitnami/kafka:3.4
@@ -401,120 +238,6 @@ services:
       - logstash
       - elasticsearch
 
-  zookeeper:
-    image: zookeeper:3.8
-    container_name: zookeeper
-    hostname: zookeeper
-    logging:
-      driver: "gelf"
-      options:
-        gelf-address: "udp://localhost:${LOGSTASH_PORT}"
-        tag: "zookeeper"
-    depends_on:
-      - logstash
-      - elasticsearch
-
-  clickhouse-node1:
-    image: clickhouse/clickhouse-server:23
-    container_name: clickhouse-node1
-    hostname: clickhouse-node1
-    logging:
-      driver: "gelf"
-      options:
-        gelf-address: "udp://localhost:${LOGSTASH_PORT}"
-        tag: "clickhouse-node1"
-    ports:
-      - "8123:8123"
-      - "9010:9000"
-    volumes:
-      - ./clickhouse/clickhouse_init:/docker-entrypoint-initdb.d
-      - ./clickhouse/data/node1:/etc/clickhouse-server
-    depends_on:
-      - zookeeper
-      - logstash
-      - elasticsearch
-
-  clickhouse-node2:
-    image: clickhouse/clickhouse-server:23
-    container_name: clickhouse-node2
-    hostname: clickhouse-node2
-    logging:
-      driver: "gelf"
-      options:
-        gelf-address: "udp://localhost:${LOGSTASH_PORT}"
-        tag: "clickhouse-node2"
-    ports:
-      - "8124:8123"
-      - "9011:9000"
-    volumes:
-      - ./clickhouse/clickhouse_init:/docker-entrypoint-initdb.d
-      - ./clickhouse/data/node2:/etc/clickhouse-server
-    depends_on:
-      - zookeeper
-      - logstash
-      - elasticsearch
-
-  clickhouse-node3:
-    image: clickhouse/clickhouse-server:23
-    container_name: clickhouse-node3
-    hostname: clickhouse-node3
-    logging:
-      driver: "gelf"
-      options:
-        gelf-address: "udp://localhost:${LOGSTASH_PORT}"
-        tag: "clickhouse-node3"
-    ports:
-      - "8125:8123"
-      - "9012:9000"
-    volumes:
-      - ./clickhouse/clickhouse_init:/docker-entrypoint-initdb.d
-      - ./clickhouse/data/node3:/etc/clickhouse-server
-    depends_on:
-      - zookeeper
-      - logstash
-      - elasticsearch
-
-  clickhouse-node4:
-    image: clickhouse/clickhouse-server:23
-    container_name: clickhouse-node4
-    hostname: clickhouse-node4
-    logging:
-      driver: "gelf"
-      options:
-        gelf-address: "udp://localhost:${LOGSTASH_PORT}"
-        tag: "clickhouse-node4"
-    ports:
-      - "8126:8123"
-      - "9013:9000"
-    volumes:
-      - ./clickhouse/clickhouse_init:/docker-entrypoint-initdb.d
-      - ./clickhouse/data/node4:/etc/clickhouse-server
-    depends_on:
-      - zookeeper
-      - logstash
-      - elasticsearch
-
-  etl_kafka_clickhouse:
-    container_name: etl_kafka_clickhouse
-    build: ./etl_kafka_clickhouse
-    <<: *app
-    logging:
-      driver: "gelf"
-      options:
-        gelf-address: "udp://localhost:${LOGSTASH_PORT}"
-        tag: "etl_kafka_clickhouse"
-    depends_on:
-      - ugc_service
-      - kafka-0
-      - kafka-1
-      - kafka-2
-      - clickhouse-node1
-      - clickhouse-node2
-      - clickhouse-node3
-      - clickhouse-node4
-      - logstash
-      - elasticsearch
-
   logstash:
     image: docker.elastic.co/logstash/logstash:8.10.2
     depends_on:
@@ -524,7 +247,7 @@ services:
       - "9600:9600"  # Порт для проверки состояния
     volumes:
       - ./tmp/logs/nginx/:/var/log/nginx/:ro
-      - ./ELK/deploy/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+      # - ./ELK/deploy/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
     environment:
       XPACK_MONITORING_ENABLED: "false"
       ES_HOST: "elasticsearch:9200"
@@ -534,6 +257,15 @@ services:
       retries: 3
       start_period: 30s
       timeout: 10s
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.10.2
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.10.2
@@ -553,12 +285,3 @@ services:
       timeout: 5s
       retries: 5
       start_period: 20s
-
-  kibana:
-    image: docker.elastic.co/kibana/kibana:8.10.2
-    ports:
-      - "5601:5601"
-    depends_on:
-      - elasticsearch
-    environment:
-      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200

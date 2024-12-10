@@ -3,7 +3,7 @@ from logging import config as logging_config
 
 from pydantic import BaseSettings, Field
 
-from app.core.logger import LOGGING
+from auth.core.logger import LOGGING
 
 
 class DataBaseSettings(BaseSettings):

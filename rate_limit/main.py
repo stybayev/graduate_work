@@ -30,14 +30,6 @@ redis_conn = aioredis.from_url(REDIS_URL, decode_responses=True)
 SERVICE_MAP = {
     "/api/auth": "http://auth:8082",
     "/api/v1/auth": "http://auth:8082",
-    "/api/films": "http://app:8000",
-    "/api/v1/films": "http://app:8000",
-    "/api/v1/genres": "http://app:8000",
-    "/api/v1/persons": "http://app:8000",
-    "/api/files": "http://file_api:8081",
-    "/api/v1/files": "http://file_api:8081",
-    "/admin": "http://django_admin:8001",
-    "/minio/": "http://minio:9000",
 }
 
 logging.basicConfig(level=logging.INFO, format='%(levelname)s:     %(message)s')
