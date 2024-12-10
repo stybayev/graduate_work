@@ -126,7 +126,7 @@ services:
       - elasticsearch
 
   rate_limit:
-    build: ./rate_limit
+    build: ./infrastructure/rate_limit
     <<: *app
     logging:
       driver: "gelf"
@@ -134,7 +134,7 @@ services:
         gelf-address: "udp://localhost:${LOGSTASH_PORT}"
         tag: "rate-limit-service"
     volumes:
-      - .:/rate_limit
+      - ./infrastructure:/rate_limit
     depends_on:
       - auth
       - logstash
