@@ -177,7 +177,7 @@ services:
     ports:
       - "9400:9200"
     volumes:
-      - ./ELK/deploy/es_logs:/usr/share/elasticsearch/data
+      - ./infrastructure/ELK/deploy/es_logs:/usr/share/elasticsearch/data
     healthcheck:
       test: [
         "CMD-SHELL",
