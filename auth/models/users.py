@@ -6,7 +6,7 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from db.postgres import Base
+from auth.db.postgres import Base
 
 
 class UserRole(Base):
@@ -28,9 +28,10 @@ class User(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, unique=True)
     login = Column(String(255), nullable=False, unique=True)
     email = Column(String(255), nullable=True, unique=True)
+    first_name = Column(String, index=True)
+    last_name = Column(String, index=True)
+    phone = Column(String, unique=True, index=True)
     password = Column(String(255), nullable=False)
-    first_name = Column(String(50), nullable=True)
-    last_name = Column(String(50), nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
 
     roles = relationship("Role", secondary="auth.user_roles", back_populates="users")
@@ -45,13 +46,17 @@ class User(Base):
         self,
         login: str,
         email: str,
-        password: str,
         first_name: str,
         last_name: str,
+        phone: str,
+        password: str,
+
+
     ) -> None:
         self.login = login
         self.email = email
         self.password = generate_password_hash(password)
+        self.phone = phone
         self.first_name = first_name
         self.last_name = last_name
 

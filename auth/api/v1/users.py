@@ -4,15 +4,15 @@ from typing import List
 from fastapi import APIRouter, Depends, Request, status, HTTPException
 from fastapi_jwt_auth import AuthJWT
 
-from core.tracer import traced
-from core.jwt import security_jwt
-from schema.tokens import LoginRequest, TokenResponse
-from schema.users import (LoginHistoryResponse,
+from auth.core.tracer import traced
+from auth.core.jwt import security_jwt
+from auth.schema.tokens import LoginRequest, TokenResponse
+from auth.schema.users import (LoginHistoryResponse,
                                UpdateUserCredentialsRequest, UserCreate,
                                UserResponse, UserDetails)
-from services.users import UserService, get_user_service
+from auth.services.users import UserService, get_user_service
 
-from utils.pagination import PaginatedParams
+from auth.utils.pagination import PaginatedParams
 
 router = APIRouter()
 
@@ -43,10 +43,12 @@ async def register_user(request: Request, user: UserCreate, service: UserService
                                          password=user.password,
                                          first_name=user.first_name,
                                          last_name=user.last_name,
-                                         email=user.email,)
+                                         email=user.email,
+                                         phone=user.phone)
     return UserResponse(id=new_user.id,
                         login=new_user.login,
                         email=new_user.email,
+                        phone=new_user.phone,
                         first_name=new_user.first_name,
                         last_name=new_user.last_name)
 
