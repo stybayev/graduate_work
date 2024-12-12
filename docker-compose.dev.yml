@@ -21,7 +21,7 @@ services:
         gelf-address: "udp://localhost:${LOGSTASH_PORT}"
         tag: "auth-service"
     volumes:
-      - .:/auth
+      - ./auth:/auth
     expose:
       - ${AUTH_API_UVICORN_PORT}
     ports:
@@ -41,7 +41,7 @@ services:
         gelf-address: "udp://localhost:${LOGSTASH_PORT}"
         tag: "api-migrations-service"
     volumes:
-      - .:/auth
+      - ./auth:/auth
     depends_on:
       - db
       - redis

@@ -6,7 +6,7 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from auth.db.postgres import Base
+from db.postgres import Base
 
 
 class UserRole(Base):

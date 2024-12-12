@@ -6,9 +6,9 @@ from fastapi_jwt_auth import AuthJWT
 from opentelemetry import trace
 from redis.asyncio import Redis
 
-from auth.core.config import settings
-from auth.core.tracer import traced
-from auth.schema.tokens import TokenResponse
+from core.config import settings
+from core.tracer import traced
+from schema.tokens import TokenResponse
 
 tracer = trace.get_tracer(__name__)
 

@@ -3,10 +3,10 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, Path, Request
 from fastapi_jwt_auth import AuthJWT
 
-from auth.core.tracer import traced
-from auth.schema.roles import (AssignRoleResponse, RoleResponse, RoleSchema,
+from core.tracer import traced
+from schema.roles import (AssignRoleResponse, RoleResponse, RoleSchema,
                                RoleUpdateSchema, UserPermissionsSchema)
-from auth.services.roles import RoleService, get_role_service
+from services.roles import RoleService, get_role_service
 
 router = APIRouter()
 

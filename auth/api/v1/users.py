@@ -4,15 +4,15 @@ from typing import List
 from fastapi import APIRouter, Depends, Request, status, HTTPException
 from fastapi_jwt_auth import AuthJWT
 
-from auth.core.tracer import traced
-from auth.core.jwt import security_jwt
-from auth.schema.tokens import LoginRequest, TokenResponse
-from auth.schema.users import (LoginHistoryResponse,
+from core.tracer import traced
+from core.jwt import security_jwt
+from schema.tokens import LoginRequest, TokenResponse
+from schema.users import (LoginHistoryResponse,
                                UpdateUserCredentialsRequest, UserCreate,
                                UserResponse, UserDetails)
-from auth.services.users import UserService, get_user_service
+from services.users import UserService, get_user_service
 
-from auth.utils.pagination import PaginatedParams
+from utils.pagination import PaginatedParams
 
 router = APIRouter()
 

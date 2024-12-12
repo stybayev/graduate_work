@@ -1,4 +1,4 @@
-from auth.core.jwt import JWTBearer
+from core.jwt import JWTBearer
 
 
 def before_send(event, hint):

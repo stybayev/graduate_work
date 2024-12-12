@@ -4,7 +4,7 @@ from fastapi_jwt_auth import AuthJWT
 from fastapi_jwt_auth.exceptions import AuthJWTException, JWTDecodeError
 from redis.asyncio import Redis
 
-from auth.core.config import settings
+from core.config import settings
 
 redis_client = Redis(host=settings.redis_host, port=settings.redis_port)
 

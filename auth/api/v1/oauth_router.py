@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, Request
 from fastapi_jwt_auth import AuthJWT
 
-from auth.core.jwt import security_jwt
-from auth.services.oauth_service import OAuthService, get_oauth_service
-from auth.utils.enums import AuthProvider
+from core.jwt import security_jwt
+from services.oauth_service import OAuthService, get_oauth_service
+from utils.enums import AuthProvider
 
 router = APIRouter()
 

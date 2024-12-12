@@ -2,7 +2,7 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 
-from auth.core.config import settings
+from core.config import settings
 from typing import AsyncGenerator
 import httpx
 
@@ -15,7 +15,7 @@ async_session = sessionmaker(bind=engine, class_=AsyncSession, expire_on_commit=
 async def create_database() -> None:
     async with engine.begin() as conn:
         await conn.execute(text("CREATE SCHEMA IF NOT EXISTS auth"))
-        from auth.models.users import LoginHistory, Role, User, UserRole
+        from models.users import LoginHistory, Role, User, UserRole
         await conn.run_sync(Base.metadata.create_all)
 
 

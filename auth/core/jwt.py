@@ -1,6 +1,6 @@
 from pydantic import BaseSettings
 
-from auth.core.config import settings
+from core.config import settings
 from jose import jwt
 import time
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer

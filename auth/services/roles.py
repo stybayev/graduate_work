@@ -11,13 +11,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy.orm import selectinload
 
-from auth.core.tracer import traced
-from auth.db.postgres import get_db_session
-from auth.db.redis import get_redis
-from auth.models.users import Role, User, UserRole
-from auth.schema.roles import (RoleResponse, RoleSchema, RoleUpdateSchema,
+from core.tracer import traced
+from db.postgres import get_db_session
+from db.redis import get_redis
+from models.users import Role, User, UserRole
+from schema.roles import (RoleResponse, RoleSchema, RoleUpdateSchema,
                                UserPermissionsSchema)
-from auth.utils.permissions import admin_required
+from utils.permissions import admin_required
 
 tracer = trace.get_tracer(__name__)
 

@@ -8,4 +8,4 @@ RUN /usr/local/bin/python -m pip install --upgrade pip \
 && pip install -r requirements.txt
 COPY . /auth
 
-CMD uvicorn --reload --host=$AUTH_API_UVICORN_HOST --port=$AUTH_API_UVICORN_PORT auth.main:app
+CMD uvicorn --reload --host=$AUTH_API_UVICORN_HOST --port=$AUTH_API_UVICORN_PORT main:app

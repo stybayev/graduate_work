@@ -7,13 +7,13 @@ from fastapi_jwt_auth import AuthJWT
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
-from auth.core.config import settings
-from auth.db.postgres import get_db_session, get_http_client
-from auth.models.social import SocialAccount
-from auth.schema.tokens import TokenResponse
-from auth.schema.users import UserCreate
-from auth.services.users import UserService, get_user_service
-from auth.utils.enums import AuthProvider
+from core.config import settings
+from db.postgres import get_db_session, get_http_client
+from models.social import SocialAccount
+from schema.tokens import TokenResponse
+from schema.users import UserCreate
+from services.users import UserService, get_user_service
+from utils.enums import AuthProvider
 
 
 class OAuthService:
