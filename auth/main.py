@@ -9,14 +9,14 @@ from fastapi_jwt_auth.exceptions import AuthJWTException
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from redis.asyncio import Redis
 
-from auth.api.v1 import oauth_router, roles, users, profiles
-from auth.core.config import settings
-from auth.core.jwt import JWTSettings
-from auth.core.middleware import before_request, check_blacklist
-from auth.core.tracer import init_tracer
-from auth.db import redis
-from auth.utils.exception_handlers import authjwt_exception_handler
-from auth.utils.sentry_hook import before_send
+from api.v1 import oauth_router, roles, users
+from core.config import settings
+from core.jwt import JWTSettings
+from core.middleware import before_request, check_blacklist
+from core.tracer import init_tracer
+from db import redis
+from utils.exception_handlers import authjwt_exception_handler
+from utils.sentry_hook import before_send
 
 sentry_sdk.init(
     dsn=os.getenv("AUTH_SENTRY_DSN"),
@@ -57,5 +57,4 @@ app.middleware("http")(check_blacklist)
 
 app.include_router(users.router, prefix="/api/v1/auth/users", tags=["users"])
 app.include_router(roles.router, prefix="/api/v1/auth/roles", tags=["roles"])
-app.include_router(profiles.router, prefix="/api/v1/auth/profiles", tags=["profiles"])
 app.include_router(oauth_router.router, prefix="/api/v1/auth", tags=["yandex"])

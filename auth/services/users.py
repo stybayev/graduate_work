@@ -12,14 +12,14 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from werkzeug.security import generate_password_hash
 
-from auth.core.tracer import traced
-from auth.db.postgres import get_db_session
-from auth.db.redis import get_redis
-from auth.models.users import LoginHistory, Role, User, UserRole
-from auth.schema.tokens import TokenResponse
-from auth.schema.users import LoginHistoryResponse, UserDetails
-from auth.services.tokens import TokenService
-from auth.utils.permissions import access_token_required, refresh_token_required
+from core.tracer import traced
+from db.postgres import get_db_session
+from db.redis import get_redis
+from models.users import LoginHistory, Role, User, UserRole
+from schema.tokens import TokenResponse
+from schema.users import LoginHistoryResponse, UserDetails
+from services.tokens import TokenService
+from utils.permissions import access_token_required, refresh_token_required
 
 tracer = trace.get_tracer(__name__)
 
@@ -67,7 +67,6 @@ class UserService:
             self,
             login: str,
             password: str,
-            phone: str,
             email: str | None = None,
             first_name: str | None = None,
             last_name: str | None = None,
@@ -78,7 +77,6 @@ class UserService:
         new_user = User(
             login=login,
             email=email,
-            phone=phone,
             password=password,
             first_name=first_name,
             last_name=last_name,

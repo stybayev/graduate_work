@@ -1,8 +1,8 @@
-from sqlalchemy import text, create_engine
+from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 
-from auth.core.config import settings
+from core.config import settings
 from typing import AsyncGenerator
 import httpx
 
@@ -10,14 +10,12 @@ Base = declarative_base()
 
 engine = create_async_engine(settings.db.url, echo=settings.log_sql_queries, future=True)
 async_session = sessionmaker(bind=engine, class_=AsyncSession, expire_on_commit=False)
-# Синхронный движок для миграций и операций с метаданными
-# sync_engine = create_engine(settings.db.url.replace("+asyncpg", ""), echo=settings.log_sql_queries, future=True)
 
 
 async def create_database() -> None:
     async with engine.begin() as conn:
         await conn.execute(text("CREATE SCHEMA IF NOT EXISTS auth"))
-        from auth.models.users import LoginHistory, Role, User, UserRole
+        from models.users import LoginHistory, Role, User, UserRole
         await conn.run_sync(Base.metadata.create_all)
 
 

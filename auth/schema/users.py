@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import List
 from uuid import UUID
 
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel
 
 
 class UserBase(BaseModel):
@@ -10,7 +10,6 @@ class UserBase(BaseModel):
     email: str | None = None
     first_name: str | None = None
     last_name: str | None = None
-    phone: str
 
 
 class UserCreate(UserBase):
@@ -45,24 +44,8 @@ class UserDetails(BaseModel):
     email: str | None = None
     first_name: str | None = None
     last_name: str | None = None
-    phone: str
     created_at: datetime
     roles: List[str]
-
-    class Config:
-        orm_mode = True
-
-
-class UserProfileCreate(UserBase):
-    pass
-
-
-class UserProfileUpdate(UserBase):
-    pass
-
-
-class UserProfile(UserBase):
-    id: int
 
     class Config:
         orm_mode = True
