@@ -22,5 +22,10 @@ env/
 .env.development
 *.env.test
 
+ELK
+ELK/
+*ELK/
+*ELK
+
 # tmp
 tmp/
