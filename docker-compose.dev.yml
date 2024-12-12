@@ -9,6 +9,7 @@ volumes:
   dbdata:
   redis_data:
   es_logs:
+  esdata:
 
 services:
   auth:
@@ -169,15 +170,36 @@ services:
     environment:
       - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
 
+  elasticsearch_db:
+    image: elasticsearch:8.6.2
+    logging:
+      driver: "gelf"
+      options:
+        gelf-address: "udp://localhost:${LOGSTASH_PORT}"
+        tag: "elasticsearch_db"
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    expose:
+      - 9200
+    ports:
+      - ${ELASTIC_PORT}:9200
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
+    depends_on:
+      - logstash
+
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.10.2
     environment:
       - discovery.type=single-node
       - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms200m -Xmx200m"
     ports:
       - "9400:9200"
-    volumes:
-      - ./infrastructure/ELK/deploy/es_logs:/usr/share/elasticsearch/data
+#    volumes:
+#      - ./infrastructure/ELK/deploy/es_logs:/usr/share/elasticsearch/data
     healthcheck:
       test: [
         "CMD-SHELL",
