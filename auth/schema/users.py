@@ -8,6 +8,7 @@ from pydantic import BaseModel
 class UserBase(BaseModel):
     login: str
     email: str | None = None
+    phone: str | None = None
     first_name: str | None = None
     last_name: str | None = None
 
@@ -42,6 +43,7 @@ class UserDetails(BaseModel):
     id: UUID
     login: str
     email: str | None = None
+    phone: str | None = None
     first_name: str | None = None
     last_name: str | None = None
     created_at: datetime

@@ -9,7 +9,7 @@ from fastapi_jwt_auth.exceptions import AuthJWTException
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from redis.asyncio import Redis
 
-from api.v1 import oauth_router, roles, users
+from api.v1 import oauth_router, roles, users, profiles
 from core.config import settings
 from core.jwt import JWTSettings
 from core.middleware import before_request, check_blacklist
@@ -57,4 +57,5 @@ app.middleware("http")(check_blacklist)
 
 app.include_router(users.router, prefix="/api/v1/auth/users", tags=["users"])
 app.include_router(roles.router, prefix="/api/v1/auth/roles", tags=["roles"])
+app.include_router(profiles.router, prefix="/api/v1/auth/profiles", tags=["profiles"])
 app.include_router(oauth_router.router, prefix="/api/v1/auth", tags=["yandex"])
