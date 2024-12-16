@@ -3,15 +3,32 @@
 x-app: &app
   env_file:
     - .env
-  restart: always
+  restart: unless-stopped
 
 volumes:
   dbdata:
   redis_data:
   es_logs:
   esdata:
+  media:
+  static:
 
 services:
+  admin_panel:
+    build: .
+    image: profile-admin-panel:dev
+    volumes:
+      - ./admin_panel:/opt/app
+      - media:/opt/app/media
+      - static:/opt/app/staticfiles
+    depends_on:
+      - db
+    env_file:
+      - .env
+    expose:
+      - ${DJANGO_PORT}
+    restart: unless-stopped
+
   auth:
     container_name: auth
     build: ./auth
@@ -101,6 +118,7 @@ services:
       - ./infrastructure/tmp/logs/nginx/:/var/log/nginx/
       - ./infrastructure/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./infrastructure/nginx/configs/:/etc/nginx/conf.d/:ro
+      - static:/opt/app/staticfiles
     depends_on:
       - auth
       - rate_limit
