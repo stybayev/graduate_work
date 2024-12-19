@@ -41,7 +41,7 @@ services:
         gelf-address: "udp://localhost:${LOGSTASH_PORT}"
         tag: "profile-service"
     volumes:
-      - ./profile_service:/profile_service
+      - .:/profile_service
     expose:
       - 8084
     ports:

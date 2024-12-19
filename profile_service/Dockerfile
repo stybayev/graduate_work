@@ -54,10 +54,10 @@ RUN chmod +x /docker-entrypoint.sh
 WORKDIR $PYSETUP_PATH
 RUN poetry install --with dev
 
-WORKDIR /app
+WORKDIR /profile_service
 COPY . .
 
-EXPOSE 8080
+EXPOSE 8084
 ENTRYPOINT ["/docker-entrypoint.sh"]
 
 # 'production' stage uses the clean 'python-base' stage and copyies
@@ -66,7 +66,7 @@ FROM python-base AS production
 ENV FASTAPI_ENV=production
 
 COPY --from=builder-base $VENV_PATH $VENV_PATH
-COPY ./core/gunicorn_conf.py app/core/gunicorn_conf.py
+COPY ./core/gunicorn_conf.py profile_service/core/gunicorn_conf.py
 
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh
@@ -75,9 +75,9 @@ RUN chmod +x /docker-entrypoint.sh
 RUN groupadd -g 1500 poetry && \
     useradd -m -u 1500 -g poetry poetry
 
-COPY --chown=poetry:poetry . /app
+COPY --chown=poetry:poetry . /profile_service
 USER poetry
-WORKDIR /app
+WORKDIR /profile_service
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
 
