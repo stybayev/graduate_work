@@ -24,14 +24,31 @@ services:
     volumes:
       - ./auth:/auth
     expose:
-      - ${AUTH_API_UVICORN_PORT}
+      - 8082
     ports:
-      - ${AUTH_API_UVICORN_PORT}:${AUTH_API_UVICORN_PORT}
+      - "8082:8082"
     depends_on:
-      - db
-      - redis
-      - logstash
-      - elasticsearch
+      db:
+        condition: service_healthy
+
+  profile_service:
+    container_name: profile_service
+    build: ./profile_service
+    <<: *app
+    logging:
+      driver: "gelf"
+      options:
+        gelf-address: "udp://localhost:${LOGSTASH_PORT}"
+        tag: "profile-service"
+    volumes:
+      - .:/profile_service
+    expose:
+      - 8084
+    ports:
+      - "8084:8084"
+    depends_on:
+      db:
+        condition: service_healthy
 
   api-migrations:
     build: ./auth
@@ -44,10 +61,8 @@ services:
     volumes:
       - ./auth:/auth
     depends_on:
-      - db
-      - redis
-      - logstash
-      - elasticsearch
+      db:
+        condition: service_healthy
     command: alembic upgrade head
 
   db:
@@ -62,15 +77,21 @@ services:
         tag: "db"
     expose:
       - 5432
-    ports:
-      - ${POSTGRES_PORT}:5432
-    env_file:
-      - .env
     volumes:
       - dbdata:/var/lib/postgresql/data
     depends_on:
       - logstash
       - elasticsearch
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "sh -c 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}'",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
 
   redis:
     image: redis:alpine
