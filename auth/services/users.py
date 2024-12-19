@@ -68,6 +68,7 @@ class UserService:
             login: str,
             password: str,
             email: str | None = None,
+            phone: str | None = None,
             first_name: str | None = None,
             last_name: str | None = None,
     ) -> User:
@@ -77,6 +78,7 @@ class UserService:
         new_user = User(
             login=login,
             email=email,
+            phone=phone,
             password=password,
             first_name=first_name,
             last_name=last_name,

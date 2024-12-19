@@ -22,7 +22,11 @@ RUN apt-get update &&  \
     pip install -r requirements.txt --no-cache
 COPY admin_panel/ .
 
-RUN chmod +x docker-entrypoint.sh  && mkdir -p /opt/app/staticfiles /opt/app/mediafiles /opt/app/static /opt/app/uploads
+RUN chmod +x docker-entrypoint.sh  &&  \
+    mkdir -p /opt/app/staticfiles && \
+    mkdir -p /opt/app/mediafiles && \
+    mkdir -p /opt/app/static && \
+    mkdir -p /opt/app/uploads
 
 # Установка прав доступа на все файлы и директории
 RUN chown -R django:django /opt/app
