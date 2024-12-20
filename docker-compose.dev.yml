@@ -65,6 +65,21 @@ services:
         condition: service_healthy
     command: alembic upgrade head
 
+  profile-migrations:
+    build: ./profile_service
+    <<: *app
+    logging:
+      driver: "gelf"
+      options:
+        gelf-address: "udp://localhost:${LOGSTASH_PORT}"
+        tag: "profile-migrations-service"
+    volumes:
+      - ./profile_service:/profile_service
+    depends_on:
+      db:
+        condition: service_healthy
+    command: alembic upgrade head
+
   db:
     image: ghcr.io/dbsystel/postgresql-partman:14
     container_name: db
