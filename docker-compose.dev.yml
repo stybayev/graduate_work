@@ -14,7 +14,7 @@ volumes:
 services:
   auth:
     container_name: auth
-    build: ./auth
+    build: auth_service
     <<: *app
     logging:
       driver: "gelf"
@@ -22,7 +22,7 @@ services:
         gelf-address: "udp://localhost:${LOGSTASH_PORT}"
         tag: "auth-service"
     volumes:
-      - ./auth:/auth
+      - ./auth_service:/auth_service
     expose:
       - 8082
     ports:
@@ -51,7 +51,7 @@ services:
         condition: service_healthy
 
   api-migrations:
-    build: ./auth
+    build: auth_service
     <<: *app
     logging:
       driver: "gelf"
@@ -59,7 +59,7 @@ services:
         gelf-address: "udp://localhost:${LOGSTASH_PORT}"
         tag: "api-migrations-service"
     volumes:
-      - ./auth:/auth
+      - ./auth_service:/auth_service
     depends_on:
       db:
         condition: service_healthy
