@@ -77,8 +77,11 @@ services:
         tag: "db"
     expose:
       - 5432
+    ports:
+      - "5432:5432"
     volumes:
       - dbdata:/var/lib/postgresql/data
+      - ./infrastructure/postgres/init:/docker-entrypoint-initdb.d
     depends_on:
       - logstash
       - elasticsearch
