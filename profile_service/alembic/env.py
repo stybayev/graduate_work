@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 from alembic import context
 from core.config import settings
 import models
-from models.users import User
+from models.profiles import UserProfile
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -24,7 +24,7 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-target_metadata = User.metadata
+target_metadata = UserProfile.metadata
 
 
 # other values from the config, defined by the needs of env.py,
