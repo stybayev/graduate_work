@@ -31,7 +31,7 @@ class DataBaseSettings(BaseSettings):
         """Конфигурация для загрузки переменных окружения."""
 
         env_file = '.env'
-        env_prefix = 'POSTGRES_'
+        env_prefix = 'DB_PROFILE_SERVICE_'
 
     @property
     def url(self) -> str:

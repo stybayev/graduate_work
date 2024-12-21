@@ -41,7 +41,7 @@ services:
         gelf-address: "udp://localhost:${LOGSTASH_PORT}"
         tag: "profile-service"
     volumes:
-      - .:/profile_service
+      - ./profile_service:/profile_service
     expose:
       - 8084
     ports:
@@ -53,6 +53,7 @@ services:
   api-migrations:
     build: auth_service
     <<: *app
+    restart: "no"
     logging:
       driver: "gelf"
       options:
@@ -60,6 +61,22 @@ services:
         tag: "api-migrations-service"
     volumes:
       - ./auth_service:/auth_service
+    depends_on:
+      db:
+        condition: service_healthy
+    command: alembic upgrade head
+
+  profile-migrations:
+    build: ./profile_service
+    <<: *app
+    restart: "no"
+    logging:
+      driver: "gelf"
+      options:
+        gelf-address: "udp://localhost:${LOGSTASH_PORT}"
+        tag: "profile-migrations-service"
+    volumes:
+      - ./profile_service:/profile_service
     depends_on:
       db:
         condition: service_healthy
@@ -77,8 +94,11 @@ services:
         tag: "db"
     expose:
       - 5432
+    ports:
+      - "5432:5432"
     volumes:
       - dbdata:/var/lib/postgresql/data
+      - ./infrastructure/postgres/init:/docker-entrypoint-initdb.d
     depends_on:
       - logstash
       - elasticsearch
@@ -205,7 +225,7 @@ services:
     expose:
       - 9200
     ports:
-      - ${ELASTIC_PORT}:9200
+      - "9200:9200"
     volumes:
       - esdata:/usr/share/elasticsearch/data
     depends_on:
