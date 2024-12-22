@@ -15,7 +15,7 @@ class UserProfile(Base):
     phone_number = Column(String(15), nullable=False, unique=True)
     full_name = Column(String(255), nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     def __init__(self, user_id: uuid.UUID, phone_number: str, full_name: str):
         self.user_id = user_id
