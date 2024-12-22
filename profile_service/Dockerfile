@@ -29,7 +29,8 @@ RUN buildDeps="build-essential" \
 ENV POETRY_VERSION=1.7.1
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN curl -sSL https://install.python-poetry.org | POETRY_HOME=${POETRY_HOME} python3 - --version ${POETRY_VERSION} && \
-    chmod a+x /opt/poetry/bin/poetry
+    chmod a+x /opt/poetry/bin/poetry \
+    poetry --version
 
 # We copy our Python requirements here to cache them
 # and install only runtime deps using poetry

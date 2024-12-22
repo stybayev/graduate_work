@@ -1,11 +1,14 @@
+import uuid
 from uuid import UUID
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
 
 from schemas.profile import (
     Profile, ProfileCreate, ProfileUpdate, ProfilePartialUpdate)
 from services.profile import ProfileService
-
+from async_fastapi_jwt_auth import AuthJWT
 from services.profile import get_profile_service
+
+from dependencies.auth import security_jwt
 
 router = APIRouter()
 
@@ -13,10 +16,11 @@ router = APIRouter()
 @router.post("/", response_model=Profile, status_code=status.HTTP_201_CREATED)
 async def create_profile(
         profile: ProfileCreate,
-        service: ProfileService = Depends(get_profile_service)
+        service: ProfileService = Depends(get_profile_service),
+        Authorize: AuthJWT = Depends(),
 ):
     """Создание профиля пользователя"""
-    return await service.create_profile(profile)
+    return await service.create_profile(profile=profile)
 
 
 @router.get("/{user_id}", response_model=Profile)

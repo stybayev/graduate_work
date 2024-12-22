@@ -9,6 +9,21 @@ import os
 from pydantic.v1 import BaseSettings
 
 
+class JWTSettings(BaseSettings):
+    """
+    Настройки JWT
+    """
+    authjwt_secret_key: str = ...
+    authjwt_algorithm: str = ...
+    authjwt_access_token_expires: int = ...
+    authjwt_refresh_token_expires: int = ...
+    authjwt_user_claims: bool = True
+
+    class Config:
+        env_file = ".env"
+        env_prefix = "PROFILE_API_"
+
+
 class DataBaseSettings(BaseSettings):
     """
     Настройки подключения к базе данных PostgreSQL.
@@ -55,6 +70,8 @@ class Settings(BaseSettings):
         db: Настройки базы данных.
         log_sql_queries: Флаг для логирования SQL-запросов.
     """
+    # JWT
+    jwt: JWTSettings = JWTSettings()
 
     # App
     project_name: str

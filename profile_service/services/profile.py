@@ -1,8 +1,10 @@
+import uuid
 from functools import lru_cache
 from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, update, delete
 from fastapi import HTTPException, status, Depends
+from async_fastapi_jwt_auth import AuthJWT
 
 from models.profiles import UserProfile
 
@@ -10,6 +12,8 @@ from schemas.profile import (ProfileCreate, ProfileUpdate,
                              ProfilePartialUpdate)
 
 from db.postgres import get_db_session
+
+from dependencies.auth import access_token_required
 
 
 class ProfileService:
@@ -27,10 +31,12 @@ class ProfileService:
         result = await self.db_session.execute(query)
         return result.scalars().first()
 
+    # @access_token_required
     async def create_profile(self, profile: ProfileCreate) -> UserProfile:
         """
        Создание профиля пользователя
         """
+
         existing_profile = await self.get_profile(profile.user_id)
         if existing_profile:
             raise HTTPException(
