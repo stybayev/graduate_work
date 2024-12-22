@@ -1,4 +1,3 @@
-import uuid
 from functools import lru_cache
 from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -13,7 +12,7 @@ from schemas.profile import (ProfileCreate, ProfileUpdate,
 
 from db.postgres import get_db_session
 
-from dependencies.auth import access_token_required
+from dependencies.auth import get_current_user
 
 
 class ProfileService:
@@ -23,40 +22,57 @@ class ProfileService:
     ):
         self.db_session = db_session
 
-    async def get_profile(self, user_id: UUID) -> UserProfile | None:
+    async def get_profile(self,
+                          Authorize: AuthJWT) -> UserProfile | None:
         """
         Получение профиля пользователя по user_id
         """
+        user_id = await get_current_user(Authorize)
         query = select(UserProfile).where(UserProfile.user_id == user_id)
         result = await self.db_session.execute(query)
         return result.scalars().first()
 
+    async def get_profile_by_phone_number(self, phone_number: UUID) -> UserProfile | None:
+        """
+        Получение номера телофона по номеру телефона
+        """
+        query = select(UserProfile).where(UserProfile.phone_number == phone_number)
+        result = await self.db_session.execute(query)
+        return result.scalars().first()
+
     # @access_token_required
-    async def create_profile(self, profile: ProfileCreate) -> UserProfile:
+    async def create_profile(self,
+                             profile: ProfileCreate,
+                             Authorize: AuthJWT) -> UserProfile:
         """
        Создание профиля пользователя
         """
+        user_id = await get_current_user(Authorize)
 
-        existing_profile = await self.get_profile(profile.user_id)
-        if existing_profile:
+        existing_profile = await self.get_profile(Authorize)
+        existing_profile_by_phone_number = await self.get_profile_by_phone_number(profile.phone_number)
+        if existing_profile or existing_profile_by_phone_number:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Профиль уже существует"
             )
 
-        db_profile = UserProfile(**profile.dict())
+        db_profile = UserProfile(**profile.dict(), user_id=user_id)
         self.db_session.add(db_profile)
         await self.db_session.commit()
         await self.db_session.refresh(db_profile)
         return db_profile
 
     async def update_profile(
-            self, user_id: UUID, profile: ProfileUpdate
+            self,
+            profile: ProfileUpdate,
+            Authorize: AuthJWT
     ) -> UserProfile | None:
         """
         Обновление профиля пользователя
         """
-        db_profile = await self.get_profile(user_id)
+        user_id = await get_current_user(Authorize)
+        db_profile = await self.get_profile(Authorize)
         if not db_profile:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
@@ -73,19 +89,23 @@ class ProfileService:
         await self.db_session.commit()
         return result.scalars().first()
 
-    async def delete_profile(self, user_id: UUID) -> bool:
+    async def delete_profile(self, Authorize: AuthJWT) -> bool:
+        user_id = await get_current_user(Authorize)
         query = delete(UserProfile).where(UserProfile.user_id == user_id)
         result = await self.db_session.execute(query)
         await self.db_session.commit()
         return result.rowcount > 0
 
     async def patch_profile(
-            self, user_id: UUID, profile_update: ProfilePartialUpdate
+            self,
+            profile_update: ProfilePartialUpdate,
+            Authorize: AuthJWT
     ) -> UserProfile | None:
         """
         Частичное обновление профиля пользователя
         """
-        db_profile = await self.get_profile(user_id)
+        user_id = await get_current_user(Authorize)
+        db_profile = await self.get_profile(Authorize)
         if not db_profile:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,

@@ -1,5 +1,5 @@
 from uuid import UUID
-
+import uuid
 from functools import wraps
 from fastapi import HTTPException, status, Request
 from async_fastapi_jwt_auth import AuthJWT
@@ -28,13 +28,15 @@ def access_token_required(func):
     return wrapper
 
 
-async def get_current_user() -> UUID:
-    # Здесь должна быть реальная проверка токена
-    # Сейчас просто заглушка
-    raise HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials"
-    )
+async def get_current_user(authorize: AuthJWT) -> UUID:
+    await authorize.jwt_required()
+    user_id = uuid.UUID(await authorize.get_jwt_subject())
+    if not user_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not validate credentials"
+        )
+    return user_id
 
 
 class JWTBearer(HTTPBearer):
@@ -71,6 +73,8 @@ class JWTBearer(HTTPBearer):
 
     @staticmethod
     def parse_token(jwt_token: str) -> dict | None:
+        print(jwt_token)
+        print()
         return JWTBearer.decode_token(jwt_token)
 
 
