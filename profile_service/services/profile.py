@@ -6,7 +6,8 @@ from fastapi import HTTPException, status, Depends
 
 from models.profiles import UserProfile
 
-from schemas.profile import ProfileCreate, ProfileUpdate
+from schemas.profile import (ProfileCreate, ProfileUpdate,
+                             ProfilePartialUpdate)
 
 from db.postgres import get_db_session
 
@@ -71,6 +72,34 @@ class ProfileService:
         result = await self.db_session.execute(query)
         await self.db_session.commit()
         return result.rowcount > 0
+
+    async def patch_profile(
+            self, user_id: UUID, profile_update: ProfilePartialUpdate
+    ) -> UserProfile | None:
+        """
+        Частичное обновление профиля пользователя
+        """
+        db_profile = await self.get_profile(user_id)
+        if not db_profile:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Профиль не существует"
+            )
+
+        # Фильтруем только не-None значения
+        update_data = profile_update.dict(exclude_unset=True)
+        if not update_data:
+            return db_profile
+
+        query = (
+            update(UserProfile)
+            .where(UserProfile.user_id == user_id)
+            .values(**update_data)
+            .returning(UserProfile)
+        )
+        result = await self.db_session.execute(query)
+        await self.db_session.commit()
+        return result.scalars().first()
 
 
 @lru_cache()

@@ -1,7 +1,8 @@
 from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, status
 
-from schemas.profile import Profile, ProfileCreate, ProfileUpdate
+from schemas.profile import (
+    Profile, ProfileCreate, ProfileUpdate, ProfilePartialUpdate)
 from services.profile import ProfileService
 
 from services.profile import get_profile_service
@@ -54,3 +55,13 @@ async def delete_profile(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Профиль не существует"
         )
+
+
+@router.patch("/{user_id}", response_model=Profile)
+async def patch_profile(
+        user_id: UUID,
+        profile: ProfilePartialUpdate,
+        service: ProfileService = Depends(get_profile_service)
+):
+    """Частичное обновление профиля пользователя"""
+    return await service.patch_profile(user_id, profile)
