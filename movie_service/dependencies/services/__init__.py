@@ -1,0 +1,1 @@
+from .movie_service_factory import get_film_service
