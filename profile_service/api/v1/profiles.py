@@ -14,7 +14,7 @@ async def create_profile(
         profile: ProfileCreate,
         service: ProfileService = Depends(get_profile_service)
 ):
-    """Create new user profile"""
+    """Создание профиля пользователя"""
     return await service.create_profile(profile)
 
 
@@ -23,7 +23,7 @@ async def get_profile(
         user_id: UUID,
         service: ProfileService = Depends(get_profile_service)
 ):
-    """Get user profile by user_id"""
+    """Получение профиля пользователя по user_id"""
     profile = await service.get_profile(user_id)
     if not profile:
         raise HTTPException(
@@ -31,26 +31,26 @@ async def get_profile(
             detail="Профиль не найден"
         )
     return profile
-#
-#
-# @router.put("/{user_id}", response_model=Profile)
-# async def update_profile(
-#         user_id: UUID,
-#         profile: ProfileUpdate,
-#         service: ProfileService = Depends(get_profile_service)
-# ):
-#     """Update user profile"""
-#     return await service.update_profile(user_id, profile)
-#
-#
-# @router.delete("/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
-# async def delete_profile(
-#         user_id: UUID,
-#         service: ProfileService = Depends(get_profile_service)
-# ):
-#     """Delete user profile"""
-#     if not await service.delete_profile(user_id):
-#         raise HTTPException(
-#             status_code=status.HTTP_404_NOT_FOUND,
-#             detail="Profile not found"
-#         )
+
+
+@router.put("/{user_id}", response_model=Profile)
+async def update_profile(
+        user_id: UUID,
+        profile: ProfileUpdate,
+        service: ProfileService = Depends(get_profile_service)
+):
+    """Обновление профиля пользователя"""
+    return await service.update_profile(user_id, profile)
+
+
+@router.delete("/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_profile(
+        user_id: UUID,
+        service: ProfileService = Depends(get_profile_service)
+):
+    """Удаление профиля пользователя"""
+    if not await service.delete_profile(user_id):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Профиль не существует"
+        )

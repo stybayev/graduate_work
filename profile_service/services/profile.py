@@ -43,34 +43,34 @@ class ProfileService:
         await self.db_session.refresh(db_profile)
         return db_profile
 
-    # async def update_profile(
-    #         self, user_id: UUID, profile: ProfileUpdate
-    # ) -> UserProfile | None:
-    #     """
-    #     Обновление профиля пользователя
-    #     """
-    #     db_profile = await self.get_profile(user_id)
-    #     if not db_profile:
-    #         raise HTTPException(
-    #             status_code=status.HTTP_404_NOT_FOUND,
-    #             detail="Профиль уже существует"
-    #         )
-    #
-    #     query = (
-    #         update(UserProfile)
-    #         .where(UserProfile.user_id == user_id)
-    #         .values(**profile.dict())
-    #         .returning(UserProfile)
-    #     )
-    #     result = await self.db_session.execute(query)
-    #     await self.db_session.commit()
-    #     return result.scalars().first()
-    #
-    # async def delete_profile(self, user_id: UUID) -> bool:
-    #     query = delete(UserProfile).where(UserProfile.user_id == user_id)
-    #     result = await self.db_session.execute(query)
-    #     await self.db_session.commit()
-    #     return result.rowcount > 0
+    async def update_profile(
+            self, user_id: UUID, profile: ProfileUpdate
+    ) -> UserProfile | None:
+        """
+        Обновление профиля пользователя
+        """
+        db_profile = await self.get_profile(user_id)
+        if not db_profile:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Профиль не существует"
+            )
+
+        query = (
+            update(UserProfile)
+            .where(UserProfile.user_id == user_id)
+            .values(**profile.dict())
+            .returning(UserProfile)
+        )
+        result = await self.db_session.execute(query)
+        await self.db_session.commit()
+        return result.scalars().first()
+
+    async def delete_profile(self, user_id: UUID) -> bool:
+        query = delete(UserProfile).where(UserProfile.user_id == user_id)
+        result = await self.db_session.execute(query)
+        await self.db_session.commit()
+        return result.rowcount > 0
 
 
 @lru_cache()
