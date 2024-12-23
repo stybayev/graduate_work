@@ -50,6 +50,23 @@ services:
       db:
         condition: service_healthy
 
+  movie_service:
+    container_name: movie_service
+    build: ./movie_service
+    <<: *app
+    logging:
+      driver: "gelf"
+      options:
+        gelf-address: "udp://localhost:${LOGSTASH_PORT}"
+        tag: "movie-service"
+    expose:
+      - ${MOVIE_API_UVICORN_PORT}
+    ports:
+      - ${MOVIE_API_UVICORN_PORT}:${MOVIE_API_UVICORN_PORT}
+    depends_on:
+      db:
+        condition: service_healthy
+
   api-migrations:
     build: auth_service
     <<: *app
@@ -183,7 +200,7 @@ services:
       - elasticsearch
 
   logstash:
-    image: docker.elastic.co/logstash/logstash:8.10.2
+    image: logstash:8.10.2
     depends_on:
       - elasticsearch
     ports:
@@ -203,7 +220,7 @@ services:
       timeout: 10s
 
   kibana:
-    image: docker.elastic.co/kibana/kibana:8.10.2
+    image: kibana:8.10.2
     ports:
       - "5601:5601"
     depends_on:
@@ -232,7 +249,7 @@ services:
       - logstash
 
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.10.2
+    image: elasticsearch:8.10.2
     environment:
       - discovery.type=single-node
       - xpack.security.enabled=false
