@@ -22,3 +22,23 @@ app = FastAPI(
 )
 
 app.include_router(profiles.router, prefix="/api/v1/profiles", tags=["profiles"])
+
+
+from integrations.kafka import get_kafka_producer, send_to_kafka
+
+def test_send_event():
+    topic = "click-events"
+    key = "test-user"
+    value = {
+        "event_type": "click",
+        "timestamp": "2024-12-23T10:00:00Z",
+        "data": {"button": "submit"},
+        "source": "web"
+    }
+
+    with get_kafka_producer() as producer:
+        send_to_kafka(producer, topic, key, value)
+    print("Message sent successfully!")
+
+test_send_event()
+
