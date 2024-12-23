@@ -43,10 +43,12 @@ async def register_user(request: Request, user: UserCreate, service: UserService
                                          password=user.password,
                                          first_name=user.first_name,
                                          last_name=user.last_name,
-                                         email=user.email,)
+                                         email=user.email,
+                                         phone=user.phone,)
     return UserResponse(id=new_user.id,
                         login=new_user.login,
                         email=new_user.email,
+                        phone=new_user.phone,
                         first_name=new_user.first_name,
                         last_name=new_user.last_name)
 

@@ -18,6 +18,7 @@ echo "Database $POSTGRES_HOST:$POSTGRES_PORT is up and running!"
 
 # Выполняем миграции
 echo "Running migrations..."
+python manage.py makemigrations
 python manage.py migrate || { echo "Migration failed"; exit 1; }
 
 # Сбор статических файлов

@@ -3,7 +3,7 @@
 x-app: &app
   env_file:
     - .env
-  restart: unless-stopped
+#  restart: unless-stopped
 
 volumes:
   dbdata:
@@ -22,6 +22,7 @@ services:
       - media:/opt/app/media
       - static:/opt/app/staticfiles
       - ./static:/opt/app/static
+#      - ./profiles/migrations:/opt/app/profiles/migrations
     depends_on:
       db:
         condition: service_healthy
@@ -87,9 +88,11 @@ services:
       - .env
     volumes:
       - dbdata:/var/lib/postgresql/data
-    depends_on:
-      - logstash
-      - elasticsearch
+      - ./init_db.sql:/docker-entrypoint-initdb.d/init.sql:ro
+#    depends_on:
+#      - logstash
+#      - elasticsearch
+
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U postgres" ]
       interval: 10s
