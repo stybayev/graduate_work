@@ -1,7 +1,10 @@
+from uuid import UUID
+
 from fastapi import APIRouter, Depends, HTTPException, status, Request
 
 from schemas.profile import (
-    Profile, ProfileCreate, ProfileUpdate, ProfilePartialUpdate)
+    Profile, ProfileCreate, ProfileUpdate,
+    ProfilePartialUpdate, PublicProfile)
 from services.profile import ProfileService
 from async_fastapi_jwt_auth import AuthJWT
 from services.profile import get_profile_service
@@ -22,14 +25,31 @@ async def create_profile(
     return await service.create_profile(profile=profile, Authorize=Authorize)
 
 
-@router.get("/{user_id}", response_model=Profile)
+@router.get("/me", response_model=Profile)
 async def get_profile(
         service: ProfileService = Depends(get_profile_service),
         Authorize: AuthJWT = Depends(),
         user: dict = Depends(security_jwt)
 ):
-    """Получение профиля пользователя по user_id"""
+    """Получение своего профиля"""
     profile = await service.get_profile(Authorize=Authorize)
+    if not profile:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Профиль не найден"
+        )
+    return profile
+
+
+@router.get("/users/{user_id}", response_model=PublicProfile)
+async def get_user_profile(
+        user_id: UUID,
+        service: ProfileService = Depends(get_profile_service),
+        Authorize: AuthJWT = Depends(),
+        user: dict = Depends(security_jwt)
+):
+    """Получение публичного профиля пользователя по user_id"""
+    profile = await service.get_public_profile(user_id)
     if not profile:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

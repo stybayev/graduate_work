@@ -45,3 +45,7 @@ class ProfilePartialUpdate(BaseModel):
         if v is not None and not v.replace('+', '').isdigit():
             raise ValueError('Номер телефона должен содержать только цифры')
         return v
+
+
+class PublicProfile(Profile):
+    pass

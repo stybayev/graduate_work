@@ -25,7 +25,7 @@ class ProfileService:
     async def get_profile(self,
                           Authorize: AuthJWT) -> UserProfile | None:
         """
-        Получение профиля пользователя по user_id
+        Получение своего профиля пользователя
         """
         user_id = await get_current_user(Authorize)
         query = select(UserProfile).where(UserProfile.user_id == user_id)
@@ -37,6 +37,14 @@ class ProfileService:
         Получение номера телофона по номеру телефона
         """
         query = select(UserProfile).where(UserProfile.phone_number == phone_number)
+        result = await self.db_session.execute(query)
+        return result.scalars().first()
+
+    async def get_public_profile(self, user_id: UUID) -> UserProfile | None:
+        """
+        Получение публичного профиля пользователя
+        """
+        query = select(UserProfile).where(UserProfile.user_id == user_id)
         result = await self.db_session.execute(query)
         return result.scalars().first()
 
