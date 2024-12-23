@@ -98,6 +98,9 @@ class Settings(BaseSettings):
     db: DataBaseSettings = DataBaseSettings()
     log_sql_queries: bool = False
 
+    # Kafka
+    kafka: KafkaSettings = KafkaSettings()
+
     class Config:
         """Конфигурация для загрузки переменных окружения."""
 
