@@ -9,22 +9,6 @@ import os
 from pydantic.v1 import BaseSettings
 
 
-class KafkaSettings(BaseSettings):
-    """
-    Настройки Kafka.
-
-    Атрибуты:
-        bootstrap_servers: Строка с адресами брокеров Kafka.
-    """
-
-    bootstrap_servers: str = ...
-
-    class Config:
-        """Конфигурация для загрузки переменных окружения."""
-        env_file = '.env'
-        env_prefix = 'KAFKA_'
-
-
 class JWTSettings(BaseSettings):
     """
     Настройки JWT
@@ -97,9 +81,6 @@ class Settings(BaseSettings):
     # Postgres
     db: DataBaseSettings = DataBaseSettings()
     log_sql_queries: bool = False
-
-    # Kafka
-    kafka: KafkaSettings = KafkaSettings()
 
     class Config:
         """Конфигурация для загрузки переменных окружения."""
