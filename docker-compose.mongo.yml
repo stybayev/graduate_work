@@ -88,7 +88,7 @@ services:
     <<: *common-config
     container_name: mongocfg1
     volumes:
-      - config1_data:/data/db
+      - config1_data:/data/dbF
 
   mongocfg2:
     <<: *common-config
@@ -127,7 +127,7 @@ services:
       - mongocfg2
       - mongocfg3
     volumes:
-      - ./notification_service/scripts:/scripts
+      - ./infrastructure/scripts:/scripts
     entrypoint: bash /scripts/init_config_replica.sh
     healthcheck:
       test: [ "CMD", "mongosh", "--host", "mongocfg1", "--eval", "db.adminCommand('ping')" ]
@@ -143,7 +143,7 @@ services:
       - mongors1n2
       - mongors1n3
     volumes:
-      - ./notification_service/scripts:/scripts
+      - ./infrastructure/scripts:/scripts
     entrypoint: bash /scripts/init_replica_set_mongors1.sh
     healthcheck:
       test: [ "CMD", "mongosh", "--host", "mongors1n1", "--eval", "db.adminCommand('ping')" ]
@@ -159,7 +159,7 @@ services:
       - mongors2n2
       - mongors2n3
     volumes:
-      - ./notification_service/scripts:/scripts
+      - ./infrastructure/scripts:/scripts
     entrypoint: bash /scripts/init_replica_set_mongors2.sh
     healthcheck:
       test: [ "CMD", "mongosh", "--host", "mongors2n1", "--eval", "db.adminCommand('ping')" ]
@@ -175,7 +175,7 @@ services:
       - init-replica-set-mongors1
       - init-replica-set-mongors2
     volumes:
-      - ./notification_service/scripts:/scripts
+      - ./infrastructure/scripts:/scripts
     entrypoint: bash /scripts/add_shards.sh
     healthcheck:
       test: [ "CMD", "mongosh", "--host", "mongos1", "--eval", "db.adminCommand('ping')" ]
@@ -192,7 +192,7 @@ services:
     env_file:
       - .env
     volumes:
-      - ./notification_service/scripts:/scripts
+      - ./infrastructure/scripts:/scripts
     entrypoint: bash /scripts/init_mongo_user.sh
 
 volumes:
