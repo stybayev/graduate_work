@@ -3,9 +3,9 @@ from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
 
 from enum import Enum
 
-from profile_service.core.config import settings
+from core.config import settings
 
-client = AsyncIOMotorClient(settings.db.url)
+client = AsyncIOMotorClient(settings.mongo_db.url)
 mongo_db = client[settings.mongo_db.default_database]
 
 
