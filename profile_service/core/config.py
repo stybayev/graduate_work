@@ -59,6 +59,21 @@ class DataBaseSettings(BaseSettings):
         return f'postgresql+asyncpg://{self.user}:{self.password}@{self.host}:{self.port}/{self.db}'  # noqa: WPS221, WPS305, E501
 
 
+class MongoDataBaseSettings(BaseSettings):
+    initdb_root_username: str = ...
+    initdb_root_password: str = ...
+    default_database: str = ...
+    host: str = ...
+    port: int = ...
+
+    class Config:
+        env_file = ".env"
+        env_prefix = "MONGO_"
+
+    @property
+    def url(self):
+        return f"mongodb://{self.initdb_root_username}:{self.initdb_root_password}@{self.host}:{self.port}"
+
 class Settings(BaseSettings):
     """
     Основные настройки приложения.
@@ -81,6 +96,9 @@ class Settings(BaseSettings):
     # Postgres
     db: DataBaseSettings = DataBaseSettings()
     log_sql_queries: bool = False
+
+    # MongoDB
+    mongo_db: MongoDataBaseSettings = MongoDataBaseSettings()
 
     class Config:
         """Конфигурация для загрузки переменных окружения."""
