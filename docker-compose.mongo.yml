@@ -8,14 +8,6 @@ x-common-shard1: &common-shard1
   volumes:
     - /etc/localtime:/etc/localtime:ro
 
-x-common-shard2: &common-shard2
-  image: mongo
-  command: mongod --shardsvr --replSet mongors2 --dbpath /data/db --port 27017
-  expose:
-    - "27017"
-  volumes:
-    - /etc/localtime:/etc/localtime:ro
-
 x-common-config: &common-config
   image: mongo
   command: mongod --configsvr --replSet mongors1conf --dbpath /data/db --port 27017
@@ -59,30 +51,6 @@ services:
       - 27037:27017
     volumes:
       - shard1_data3:/data/db
-
-  mongors2n1:
-    <<: *common-shard2
-    container_name: mongors2n1
-    ports:
-      - 27047:27017
-    volumes:
-      - shard2_data1:/data/db
-
-  mongors2n2:
-    <<: *common-shard2
-    container_name: mongors2n2
-    ports:
-      - 27057:27017
-    volumes:
-      - shard2_data2:/data/db
-
-  mongors2n3:
-    <<: *common-shard2
-    container_name: mongors2n3
-    ports:
-      - 27067:27017
-    volumes:
-      - shard2_data3:/data/db
 
   mongocfg1:
     <<: *common-config
@@ -152,28 +120,11 @@ services:
       start_period: 30s
       timeout: 5s
 
-  init-replica-set-mongors2:
-    image: mongo
-    depends_on:
-      - mongors2n1
-      - mongors2n2
-      - mongors2n3
-    volumes:
-      - ./infrastructure/scripts:/scripts
-    entrypoint: bash /scripts/init_replica_set_mongors2.sh
-    healthcheck:
-      test: [ "CMD", "mongosh", "--host", "mongors2n1", "--eval", "db.adminCommand('ping')" ]
-      interval: 10s
-      retries: 5
-      start_period: 30s
-      timeout: 5s
-
   add-shards:
     image: mongo
     depends_on:
       - mongos1
       - init-replica-set-mongors1
-      - init-replica-set-mongors2
     volumes:
       - ./infrastructure/scripts:/scripts
     entrypoint: bash /scripts/add_shards.sh
@@ -202,6 +153,3 @@ volumes:
   shard1_data1:
   shard1_data2:
   shard1_data3:
-  shard2_data1:
-  shard2_data2:
-  shard2_data3:
