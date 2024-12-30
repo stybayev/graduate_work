@@ -6,10 +6,14 @@ from contextlib import asynccontextmanager
 from api.v1 import profiles
 from async_fastapi_jwt_auth import AuthJWT
 
+from db.mongo import shard_collections
+from utils.enums import ShardedCollections
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     AuthJWT.load_config(lambda: JWTSettings())
+    await shard_collections(ShardedCollections)
     yield
 
 
