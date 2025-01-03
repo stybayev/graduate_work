@@ -9,7 +9,7 @@ class ShardedCollections(Enum):
     RATINGS_COLLECTION = ("ratingsCollection", {"movie_id": "hashed", "user_id": 1})
 
     # Рецензии на фильмы
-    REVIEWS_COLLECTION = ("reviewsCollection", {"movie_id": "hashed", "created_at": -1})
+    REVIEWS_COLLECTION = ("reviewsCollection", {"movie_id": "hashed", "created_at": 1})
 
     def __init__(self, collection_name, shard_key):
         self.collection_name = collection_name
