@@ -6,6 +6,9 @@ from db.mongo import get_db
 from utils.enums import ShardedCollections
 
 from schemas.bookmarks import Bookmark
+from async_fastapi_jwt_auth import AuthJWT
+
+from dependencies.auth import get_current_user
 
 
 class BookmarkService:
@@ -15,28 +18,18 @@ class BookmarkService:
     def to_object_id(self, id_str: str):
         return ObjectId(id_str) if ObjectId.is_valid(id_str) else id_str
 
-    async def add_bookmark(self, bookmark: Bookmark):
+    async def add_bookmark(self,
+                           bookmark: Bookmark,
+                           Authorize: AuthJWT):
+        user_id = await get_current_user(Authorize)
         bookmark_dict = bookmark.dict()
-        bookmark_dict["user_id"] = self.to_object_id(bookmark.user_id)
-        bookmark_dict["movie_id"] = self.to_object_id(bookmark.movie_id)
+        bookmark_dict["user_id"] = str(user_id)
+        bookmark_dict["movie_id"] = str(bookmark.movie_id)
         try:
             result = await self.collection.insert_one(bookmark_dict)
             return str(result.inserted_id)
         except Exception as e:
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
-
-    async def remove_bookmark(self, user_id: str, movie_id: str):
-        user_id = self.to_object_id(user_id)
-        movie_id = self.to_object_id(movie_id)
-        result = await self.collection.delete_one({"user_id": user_id, "movie_id": movie_id})
-        if result.deleted_count == 0:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Закладка не найдена")
-        return True
-
-    async def get_bookmarks(self, user_id: str):
-        user_id = self.to_object_id(user_id)
-        bookmarks = await self.collection.find({"user_id": user_id}).to_list(length=None)
-        return bookmarks
 
 
 @lru_cache()

@@ -1,32 +1,23 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from schemas.bookmarks import Bookmark, BookmarkResponse, BookmarksListResponse
 from services.bookmarks import BookmarkService, get_bookmark_service
+from async_fastapi_jwt_auth import AuthJWT
+
+from dependencies.auth import security_jwt
 
 router = APIRouter()
 
 
-@router.post("/bookmark/", status_code=status.HTTP_201_CREATED, response_model=BookmarkResponse)
-async def add_bookmark(bookmark: Bookmark, service: BookmarkService = Depends(get_bookmark_service)):
+@router.post("/bookmark/",
+             status_code=status.HTTP_201_CREATED,
+             response_model=BookmarkResponse)
+async def add_bookmark(bookmark: Bookmark,
+                       service: BookmarkService = Depends(get_bookmark_service),
+                       Authorize: AuthJWT = Depends(),
+                       user: dict = Depends(security_jwt)
+                       ):
     """
     Добавление фильма в закладки.
     """
-    bookmark_id = await service.add_bookmark(bookmark)
+    bookmark_id = await service.add_bookmark(bookmark, Authorize=Authorize)
     return BookmarkResponse(bookmark_id=bookmark_id)
-
-
-@router.delete("/bookmark/{user_id}/{movie_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def remove_bookmark(user_id: str, movie_id: str, service: BookmarkService = Depends(get_bookmark_service)):
-    """
-    Удаление фильма из закладок.
-    """
-    await service.remove_bookmark(user_id, movie_id)
-    return
-
-
-@router.get("/bookmarks/{user_id}", response_model=BookmarksListResponse)
-async def get_bookmarks(user_id: str, service: BookmarkService = Depends(get_bookmark_service)):
-    """
-    Просмотр списка закладок.
-    """
-    bookmarks = await service.get_bookmarks(user_id)
-    return BookmarksListResponse(bookmarks=bookmarks)
