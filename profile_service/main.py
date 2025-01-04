@@ -3,7 +3,7 @@ from fastapi import FastAPI
 
 from core.config import settings, JWTSettings
 from contextlib import asynccontextmanager
-from api.v1 import profiles
+from api.v1 import profiles, bookmarks
 from async_fastapi_jwt_auth import AuthJWT
 
 from db.mongo import shard_collections
@@ -28,3 +28,4 @@ app = FastAPI(
 )
 
 app.include_router(profiles.router, prefix="/api/v1/profiles", tags=["profiles"])
+app.include_router(bookmarks.router, prefix="/api/v1/bookmarks", tags=["bookmarks"])
