@@ -2,12 +2,11 @@ from fastapi import APIRouter, Depends, HTTPException, status, Query
 from schemas.bookmarks import (
     Bookmark,
     BookmarkResponse,
-    BookmarksListResponse
+    BookmarksListResponse,
+    BookmarkUpdate
 )
 from services.bookmarks import BookmarkService, get_bookmark_service
 from async_fastapi_jwt_auth import AuthJWT
-
-from typing import Optional
 from dependencies.auth import security_jwt
 
 from utils.enums import BookmarkType
@@ -32,7 +31,8 @@ async def add_bookmark(
         bookmark_id=bookmark_id,
         movie_id=bookmark.movie_id,
         bookmark_type=bookmark.bookmark_type,
-        created_at=bookmark.created_at
+        created_at=bookmark.created_at,
+        updated_at=bookmark.updated_at
     )
 
 
@@ -76,7 +76,7 @@ async def remove_bookmark(
 @router.patch("/bookmark/{movie_id}")
 async def update_bookmark(
         movie_id: str,
-        bookmark: Bookmark,
+        bookmark: BookmarkUpdate,
         service: BookmarkService = Depends(get_bookmark_service),
         Authorize: AuthJWT = Depends(),
         user: dict = Depends(security_jwt)

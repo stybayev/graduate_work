@@ -35,7 +35,8 @@ class BookmarkService:
         bookmark_dict.update({
             "user_id": str(user_id),
             "movie_id": str(bookmark.movie_id),
-            "created_at": datetime.utcnow()
+            "created_at": datetime.utcnow(),
+            "updated_at": datetime.utcnow()
         })
 
         try:
@@ -69,7 +70,8 @@ class BookmarkService:
                 "bookmark_id": str(doc["_id"]),
                 "movie_id": doc["movie_id"],
                 "bookmark_type": doc["bookmark_type"],
-                "created_at": doc["created_at"]
+                "created_at": doc["created_at"],
+                "updated_at": doc["updated_at"]
             })
 
         return BookmarksListResponse(bookmarks=bookmarks, total=total)
@@ -99,6 +101,8 @@ class BookmarkService:
     ):
 
         user_id = await get_current_user(Authorize)
+
+        bookmark_data["updated_at"] = datetime.utcnow()
         result = await self.collection.update_one(
             {
                 "user_id": str(user_id),

@@ -9,6 +9,7 @@ class Bookmark(BaseModel):
     movie_id: str
     bookmark_type: BookmarkType = Field(default=BookmarkType.WATCHLIST)
     created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
 
 
 class BookmarkResponse(BaseModel):
@@ -16,8 +17,14 @@ class BookmarkResponse(BaseModel):
     movie_id: str
     bookmark_type: BookmarkType
     created_at: datetime
+    updated_at: datetime
 
 
 class BookmarksListResponse(BaseModel):
     bookmarks: List[BookmarkResponse]
     total: int
+
+
+class BookmarkUpdate(BaseModel):
+    bookmark_type: BookmarkType | None = None
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
