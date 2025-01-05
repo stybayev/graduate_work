@@ -50,7 +50,7 @@ class BookmarkService:
     async def get_user_bookmarks(
             self,
             Authorize: AuthJWT,
-            bookmark_type: BookmarkType | None = None,
+            bookmark_type: BookmarkType = BookmarkType.WATCHLIST,
             skip: int = 0,
             limit: int = 20
     ) -> BookmarksListResponse:
@@ -93,10 +93,12 @@ class BookmarkService:
 
     async def update_bookmark(
             self,
-            user_id: str,
+            Authorize: AuthJWT,
             movie_id: str,
             bookmark_data: dict
     ):
+
+        user_id = await get_current_user(Authorize)
         result = await self.collection.update_one(
             {
                 "user_id": str(user_id),

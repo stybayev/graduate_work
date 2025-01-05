@@ -39,7 +39,9 @@ async def add_bookmark(
 @router.get("/bookmarks/",
             response_model=BookmarksListResponse)
 async def get_bookmarks(
-        bookmark_type: BookmarkType | None = Query(None, description="Тип закладки"),
+        bookmark_type: BookmarkType = Query(description="Тип закладки",
+                                            default=BookmarkType.WATCHLIST,
+                                            enum=[BookmarkType.WATCHLIST, BookmarkType.FAVORITE]),
         skip: int = Query(0, ge=0),
         limit: int = Query(20, ge=1, le=100),
         service: BookmarkService = Depends(get_bookmark_service),
@@ -83,7 +85,7 @@ async def update_bookmark(
     Обновление информации о закладке.
     """
     await service.update_bookmark(
-        user_id=user["user_id"],
+        Authorize=Authorize,
         movie_id=movie_id,
         bookmark_data=bookmark.dict(exclude_unset=True)
     )
