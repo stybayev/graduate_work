@@ -14,3 +14,11 @@ class ShardedCollections(Enum):
     def __init__(self, collection_name, shard_key):
         self.collection_name = collection_name
         self.shard_key = shard_key
+
+
+class BookmarkType(str, Enum):
+    """
+    Тип закладок
+    """
+    FAVORITE = "favorite"
+    WATCHLIST = "watchlist"
