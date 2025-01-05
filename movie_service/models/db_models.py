@@ -1,5 +1,7 @@
 import uuid
+from datetime import datetime
 
+from beanie import Document
 from sqlalchemy import ARRAY, Column, DateTime, String, Float
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.sql import func
@@ -23,3 +25,13 @@ class Film(Base):
 
     def __repr__(self):
         return f"<Film film_id={self.id}, title={self.title}>"
+
+
+class reviewsCollection(Document):
+    user_id: uuid.UUID
+    movie_id: uuid.UUID
+    text: str
+    created_at: datetime
+
+    class Settings:
+        collection = 'reviewsCollection'

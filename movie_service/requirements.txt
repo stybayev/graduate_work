@@ -7,3 +7,5 @@ uvicorn==0.24.0
 python-dotenv==1.0.1
 asyncpg==0.29.0
 orjson==3.6.8
+motor==3.6.0
+beanie==1.28.0

@@ -17,7 +17,7 @@ app = FastAPI(
     default_response_class=ORJSONResponse,
 )
 
-app.include_router(router_films, prefix="/api/v1/movie")
+app.include_router(router_films, prefix="/api/v1/movie", tags=["Get info films"])
 
 setup_dependencies(app)
 
