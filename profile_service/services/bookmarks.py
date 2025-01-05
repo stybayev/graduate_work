@@ -41,7 +41,14 @@ class BookmarkService:
 
         try:
             result = await self.collection.insert_one(bookmark_dict)
-            return str(result.inserted_id)
+            created_bookmark = await self.collection.find_one({"_id": result.inserted_id})
+            if not created_bookmark:
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail="Failed to retrieve created bookmark"
+                )
+            return created_bookmark
+
         except Exception as e:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

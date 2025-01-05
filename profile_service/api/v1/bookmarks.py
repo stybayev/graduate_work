@@ -26,13 +26,13 @@ async def add_bookmark(
     """
     Добавление фильма в закладки.
     """
-    bookmark_id = await service.add_bookmark(bookmark, Authorize=Authorize)
+    result = await service.add_bookmark(bookmark, Authorize=Authorize)
     return BookmarkResponse(
-        bookmark_id=bookmark_id,
-        movie_id=bookmark.movie_id,
-        bookmark_type=bookmark.bookmark_type,
-        created_at=bookmark.created_at,
-        updated_at=bookmark.updated_at
+        bookmark_id=str(result["_id"]),
+        movie_id=result["movie_id"],
+        bookmark_type=result["bookmark_type"],
+        created_at=result["created_at"],
+        updated_at=result["updated_at"]
     )
 
 
