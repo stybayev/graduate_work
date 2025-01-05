@@ -68,7 +68,7 @@ async def remove_bookmark(
     """
     Удаление фильма из закладок.
     """
-    await service.remove_bookmark(user["user_id"], movie_id)
+    await service.remove_bookmark(Authorize=Authorize, movie_id=movie_id)
 
 
 @router.patch("/bookmark/{movie_id}")

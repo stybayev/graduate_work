@@ -74,7 +74,10 @@ class BookmarkService:
 
         return BookmarksListResponse(bookmarks=bookmarks, total=total)
 
-    async def remove_bookmark(self, user_id: str, movie_id: str):
+    async def remove_bookmark(self, Authorize: AuthJWT,
+                              movie_id: str):
+
+        user_id = await get_current_user(Authorize)
         result = await self.collection.delete_one({
             "user_id": str(user_id),
             "movie_id": str(movie_id)
