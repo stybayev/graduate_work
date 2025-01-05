@@ -49,11 +49,13 @@ class BookmarkService:
 
     async def get_user_bookmarks(
             self,
-            user_id: str,
+            Authorize: AuthJWT,
             bookmark_type: BookmarkType | None = None,
             skip: int = 0,
             limit: int = 20
     ) -> BookmarksListResponse:
+
+        user_id = await get_current_user(Authorize)
         query = {"user_id": str(user_id)}
         if bookmark_type:
             query["bookmark_type"] = bookmark_type

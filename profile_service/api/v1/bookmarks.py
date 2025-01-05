@@ -2,14 +2,15 @@ from fastapi import APIRouter, Depends, HTTPException, status, Query
 from schemas.bookmarks import (
     Bookmark,
     BookmarkResponse,
-    BookmarksListResponse,
-    BookmarkType
+    BookmarksListResponse
 )
 from services.bookmarks import BookmarkService, get_bookmark_service
 from async_fastapi_jwt_auth import AuthJWT
 
 from typing import Optional
 from dependencies.auth import security_jwt
+
+from utils.enums import BookmarkType
 
 router = APIRouter()
 
@@ -49,7 +50,7 @@ async def get_bookmarks(
     Получение списка закладок пользователя.
     """
     return await service.get_user_bookmarks(
-        user_id=user["user_id"],
+        Authorize=Authorize,
         bookmark_type=bookmark_type,
         skip=skip,
         limit=limit

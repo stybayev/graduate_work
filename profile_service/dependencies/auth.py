@@ -73,8 +73,6 @@ class JWTBearer(HTTPBearer):
 
     @staticmethod
     def parse_token(jwt_token: str) -> dict | None:
-        print(jwt_token)
-        print()
         return JWTBearer.decode_token(jwt_token)
 
 
