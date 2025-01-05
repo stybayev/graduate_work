@@ -8,8 +8,6 @@ from utils.enums import BookmarkType
 class Bookmark(BaseModel):
     movie_id: str
     bookmark_type: BookmarkType = Field(default=BookmarkType.WATCHLIST)
-    note: str | None = None
-    rating: int | None = Field(None, ge=1, le=10)
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
 

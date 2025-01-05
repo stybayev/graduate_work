@@ -19,6 +19,9 @@ class ShardedCollections(Enum):
 class BookmarkType(str, Enum):
     """
     Тип закладок
+
+    WATCHLIST ("Хочу посмотреть") - это список фильмов, которые пользователь планирует посмотреть в будущем
+    FAVORITE ("Избранное") - это фильмы, которые пользователь уже посмотрел и добавил в избранное
     """
     FAVORITE = "favorite"
     WATCHLIST = "watchlist"

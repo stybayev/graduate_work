@@ -13,8 +13,10 @@ class BookmarkService:
     def __init__(self, db):
         self.collection = db[ShardedCollections.BOOKMARKS_COLLECTION.collection_name]
 
-    async def add_bookmark(self, bookmark: Bookmark,
+    async def add_bookmark(self,
+                           bookmark: Bookmark,
                            Authorize: AuthJWT) -> Bookmark:
+
         user_id = await get_current_user(Authorize)
 
         # Проверяем, не существует ли уже такая закладка
