@@ -59,6 +59,18 @@ class DataBaseSettings(BaseSettings):
         return f'postgresql+asyncpg://{self.user}:{self.password}@{self.host}:{self.port}/{self.db}'  # noqa: WPS221, WPS305, E501
 
 
+class MovieServiceSettings(BaseSettings):
+    """
+    Настройки сервиса фильмов
+    """
+    host: str = 'movie_service'
+    port: int = 8085
+
+    @property
+    def url(self) -> str:
+        return f"http://{self.host}:{self.port}/api/v1/movie"
+
+
 class MongoDataBaseSettings(BaseSettings):
     initdb_root_username: str = ...
     initdb_root_password: str = ...
@@ -73,6 +85,7 @@ class MongoDataBaseSettings(BaseSettings):
     @property
     def url(self):
         return f"mongodb://{self.initdb_root_username}:{self.initdb_root_password}@{self.host}:{self.port}"
+
 
 class Settings(BaseSettings):
     """
@@ -99,6 +112,9 @@ class Settings(BaseSettings):
 
     # MongoDB
     mongo_db: MongoDataBaseSettings = MongoDataBaseSettings()
+
+    # Movie API
+    movie_service = MovieServiceSettings()
 
     class Config:
         """Конфигурация для загрузки переменных окружения."""
