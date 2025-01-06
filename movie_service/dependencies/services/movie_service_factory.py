@@ -7,9 +7,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from movie_service.db.mongo import init_mongo
 from movie_service.db.postgres import get_db_session
 from movie_service.dependencies.registrator import add_factory_to_mapper
-from movie_service.models.db_models import Film, reviewsCollection
+from movie_service.models.db_models import Film, reviewsCollection, ratingsCollection
+from movie_service.schemas.ratings import RatingsDto
 from movie_service.schemas.review import ReviewsDto
-from movie_service.services.films import FilmServiceABC, FilmService, FilmRepository, ReviewsRepository
+from movie_service.services.films import (FilmServiceABC, FilmService, FilmRepository,
+                                          ReviewsRepository, RatingsRepository)
 
 
 @add_factory_to_mapper(FilmServiceABC)
@@ -23,6 +25,11 @@ def get_film_service(
         reviews_repository=ReviewsRepository(
             model=reviewsCollection,
             paginated_model=ReviewsDto,
+            client=client
+        ),
+        ratings_repository=RatingsRepository(
+            model=ratingsCollection,
+            paginated_model=RatingsDto,
             client=client
         )
     )
