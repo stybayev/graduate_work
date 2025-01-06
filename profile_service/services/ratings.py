@@ -3,7 +3,9 @@ from fastapi import Depends, HTTPException, status
 from datetime import datetime
 from db.mongo import get_db
 from utils.enums import ShardedCollections
-from schemas.ratings import RatingCreate, RatingsList, RatingUpdate
+from schemas.ratings import (
+    RatingCreate, RatingsList,
+    RatingUpdate, MovieAverageRating)
 from async_fastapi_jwt_auth import AuthJWT
 from dependencies.auth import get_current_user
 import httpx
@@ -173,6 +175,36 @@ class RatingService:
             )
 
         return True
+
+    async def get_movie_average_rating(self, movie_id: str) -> MovieAverageRating:
+        """
+        Получение среднего рейтинга фильма
+        """
+        pipeline = [
+            {"$match": {"movie_id": str(movie_id)}},
+            {
+                "$group": {
+                    "_id": "$movie_id",
+                    "average_rating": {"$avg": "$rating"},
+                    "total_ratings": {"$sum": 1}
+                }
+            }
+        ]
+
+        result = await self.collection.aggregate(pipeline).to_list(length=1)
+
+        if not result:
+            return MovieAverageRating(
+                movie_id=movie_id,
+                average_rating=0.0,
+                total_ratings=0
+            )
+
+        return MovieAverageRating(
+            movie_id=movie_id,
+            average_rating=round(result[0]["average_rating"], 2),
+            total_ratings=result[0]["total_ratings"]
+        )
 
 
 @lru_cache()

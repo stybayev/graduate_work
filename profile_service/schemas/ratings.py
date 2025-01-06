@@ -26,3 +26,9 @@ class RatingUpdate(BaseModel):
 class RatingsList(BaseModel):
     ratings: List[RatingResponse]
     total: int
+
+
+class MovieAverageRating(BaseModel):
+    movie_id: str
+    average_rating: float
+    total_ratings: int

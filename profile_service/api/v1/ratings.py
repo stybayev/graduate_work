@@ -1,5 +1,7 @@
 from fastapi import APIRouter, Depends, Query
-from schemas.ratings import RatingCreate, RatingResponse, RatingUpdate, RatingsList
+from schemas.ratings import (
+    RatingCreate, RatingResponse,
+    RatingUpdate, RatingsList, MovieAverageRating)
 from services.ratings import RatingService, get_rating_service
 from async_fastapi_jwt_auth import AuthJWT
 from dependencies.auth import security_jwt
@@ -76,3 +78,15 @@ async def delete_rating(
 ):
     await service.delete_rating(movie_id, Authorize)
     return {"status": "deleted"}
+
+
+@router.get("/movies/{movie_id}/average/",
+            response_model=MovieAverageRating,
+            description="Получить средний рейтинг фильма")
+async def get_movie_average_rating(
+        movie_id: str,
+        service: RatingService = Depends(get_rating_service),
+        Authorize: AuthJWT = Depends(),
+        user: dict = Depends(security_jwt)
+):
+    return await service.get_movie_average_rating(movie_id)
