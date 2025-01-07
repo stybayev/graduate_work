@@ -7,7 +7,7 @@ values ('67cc9f09-b1cb-48b5-9966-9aefa35ada01', 'Все псы попадают 
 ARRAY['horror', 'thriller'], ARRAY['Jhonny', 'Sara Jessica Parker'], ARRAY['Jhon CLun'], 'Gay Ritchi', CURRENT_DATE) ON CONFLICT DO NOTHING;
 
 insert into movie.film_work (id, title, imdb_rating, description, genre, actors_names, writers_names, director, created)
-    values ('e4bcb063-646e-459d-a815-9facc31357a8', '1+1', 3.1, 'Фильм про любовь и не только',
+values ('e4bcb063-646e-459d-a815-9facc31357a8', '1+1', 3.1, 'Фильм про любовь и не только',
 ARRAY['comedy', 'drama'], ARRAY['Jhonny', 'Sara Jessica Parker'], ARRAY['Jhon CLun'], 'Gay Ritchi', CURRENT_DATE) ON CONFLICT DO NOTHING;
 
 insert into movie.film_work (id, title, imdb_rating, description, genre, actors_names, writers_names, director, created)
