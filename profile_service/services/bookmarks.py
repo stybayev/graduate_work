@@ -7,6 +7,7 @@ from utils.enums import ShardedCollections
 from schemas.bookmarks import Bookmark, BookmarkType, BookmarksListResponse
 from async_fastapi_jwt_auth import AuthJWT
 from dependencies.auth import get_current_user
+from uuid import UUID
 
 
 class BookmarkService:
@@ -21,8 +22,8 @@ class BookmarkService:
 
         # Проверяем, не существует ли уже такая закладка
         existing_bookmark = await self.collection.find_one({
-            "user_id": str(user_id),
-            "movie_id": str(bookmark.movie_id)
+            "user_id": user_id,
+            "movie_id": bookmark.movie_id
         })
 
         if existing_bookmark:
@@ -33,8 +34,8 @@ class BookmarkService:
 
         bookmark_dict = bookmark.dict()
         bookmark_dict.update({
-            "user_id": str(user_id),
-            "movie_id": str(bookmark.movie_id),
+            "user_id": user_id,
+            "movie_id": bookmark.movie_id,
             "created_at": datetime.utcnow(),
             "updated_at": datetime.utcnow()
         })
@@ -64,7 +65,7 @@ class BookmarkService:
     ) -> BookmarksListResponse:
 
         user_id = await get_current_user(Authorize)
-        query = {"user_id": str(user_id)}
+        query = {"user_id": user_id}
         if bookmark_type:
             query["bookmark_type"] = bookmark_type
 
@@ -84,12 +85,12 @@ class BookmarkService:
         return BookmarksListResponse(bookmarks=bookmarks, total=total)
 
     async def remove_bookmark(self, Authorize: AuthJWT,
-                              movie_id: str):
+                              movie_id: UUID):
 
         user_id = await get_current_user(Authorize)
         result = await self.collection.delete_one({
-            "user_id": str(user_id),
-            "movie_id": str(movie_id)
+            "user_id": user_id,
+            "movie_id": movie_id
         })
 
         if result.deleted_count == 0:
@@ -103,8 +104,8 @@ class BookmarkService:
     async def update_bookmark(
             self,
             Authorize: AuthJWT,
-            movie_id: str,
-            bookmark_data: dict
+            movie_id: UUID,
+            bookmark_data: UUID
     ):
 
         user_id = await get_current_user(Authorize)
@@ -112,8 +113,8 @@ class BookmarkService:
         bookmark_data["updated_at"] = datetime.utcnow()
         result = await self.collection.update_one(
             {
-                "user_id": str(user_id),
-                "movie_id": str(movie_id)
+                "user_id": user_id,
+                "movie_id": movie_id
             },
             {"$set": bookmark_data}
         )

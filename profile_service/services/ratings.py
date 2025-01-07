@@ -13,6 +13,7 @@ from core.config import settings
 
 from db.postgres import get_http_client
 from motor.motor_asyncio import AsyncIOMotorClient
+from uuid import UUID
 
 
 class RatingService:
@@ -20,7 +21,7 @@ class RatingService:
         self.collection = db[ShardedCollections.RATINGS_COLLECTION.collection_name]
         self.http_client = http_client
 
-    async def check_movie_exists(self, movie_id: str) -> bool:
+    async def check_movie_exists(self, movie_id: UUID) -> bool:
         """
         Проверка существования фильма
         """
@@ -53,8 +54,8 @@ class RatingService:
 
         # Проверяем, не существует ли уже рейтинг от этого пользователя
         existing_rating = await self.collection.find_one({
-            "user_id": str(user_id),
-            "movie_id": str(rating.movie_id)
+            "user_id": user_id,
+            "movie_id": rating.movie_id
         })
 
         if existing_rating:
@@ -65,7 +66,7 @@ class RatingService:
 
         rating_dict = rating.dict()
         rating_dict.update({
-            "user_id": str(user_id),
+            "user_id": user_id,
             "created_at": datetime.utcnow()
         })
 
@@ -82,14 +83,14 @@ class RatingService:
 
     async def get_movie_ratings(
             self,
-            movie_id: str,
+            movie_id: UUID,
             skip: int = 0,
             limit: int = 20
     ) -> RatingsList:
         """
         Получение всех рейтингов фильма
         """
-        query = {"movie_id": str(movie_id)}
+        query = {"movie_id": movie_id}
         total = await self.collection.count_documents(query)
 
         cursor = self.collection.find(query).skip(skip).limit(limit)
@@ -111,7 +112,7 @@ class RatingService:
         Получение всех рейтингов пользователя
         """
         user_id = await get_current_user(Authorize)
-        query = {"user_id": str(user_id)}
+        query = {"user_id": user_id}
 
         total = await self.collection.count_documents(query)
         cursor = self.collection.find(query).skip(skip).limit(limit)
@@ -125,7 +126,7 @@ class RatingService:
 
     async def update_rating(
             self,
-            movie_id: str,
+            movie_id: UUID,
             rating_update: RatingUpdate,
             Authorize: AuthJWT
     ) -> bool:
@@ -136,8 +137,8 @@ class RatingService:
 
         result = await self.collection.update_one(
             {
-                "user_id": str(user_id),
-                "movie_id": str(movie_id)
+                "user_id": user_id,
+                "movie_id": movie_id
             },
             {"$set": {
                 "rating": rating_update.rating,
@@ -155,7 +156,7 @@ class RatingService:
 
     async def delete_rating(
             self,
-            movie_id: str,
+            movie_id: UUID,
             Authorize: AuthJWT
     ) -> bool:
         """
@@ -164,8 +165,8 @@ class RatingService:
         user_id = await get_current_user(Authorize)
 
         result = await self.collection.delete_one({
-            "user_id": str(user_id),
-            "movie_id": str(movie_id)
+            "user_id": user_id,
+            "movie_id": movie_id
         })
 
         if result.deleted_count == 0:
@@ -176,12 +177,12 @@ class RatingService:
 
         return True
 
-    async def get_movie_average_rating(self, movie_id: str) -> MovieAverageRating:
+    async def get_movie_average_rating(self, movie_id: UUID) -> MovieAverageRating:
         """
         Получение среднего рейтинга фильма
         """
         pipeline = [
-            {"$match": {"movie_id": str(movie_id)}},
+            {"$match": {"movie_id": movie_id}},
             {
                 "$group": {
                     "_id": "$movie_id",

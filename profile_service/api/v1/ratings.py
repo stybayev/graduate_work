@@ -5,6 +5,7 @@ from schemas.ratings import (
 from services.ratings import RatingService, get_rating_service
 from async_fastapi_jwt_auth import AuthJWT
 from dependencies.auth import security_jwt
+from uuid import UUID
 
 router = APIRouter()
 
@@ -32,7 +33,7 @@ async def create_rating(
             response_model=RatingsList,
             description="Получить все рейтинги фильма")
 async def get_movie_ratings(
-        movie_id: str,
+        movie_id: UUID,
         skip: int = Query(0, ge=0),
         limit: int = Query(20, ge=1, le=100),
         service: RatingService = Depends(get_rating_service),
@@ -58,7 +59,7 @@ async def get_user_ratings(
 @router.put("/rating/{movie_id}",
             description="Обновить рейтинг фильма")
 async def update_rating(
-        movie_id: str,
+        movie_id: UUID,
         rating: RatingUpdate,
         service: RatingService = Depends(get_rating_service),
         Authorize: AuthJWT = Depends(),
@@ -71,7 +72,7 @@ async def update_rating(
 @router.delete("/rating/{movie_id}",
                description="Удалить рейтинг фильма")
 async def delete_rating(
-        movie_id: str,
+        movie_id: UUID,
         service: RatingService = Depends(get_rating_service),
         Authorize: AuthJWT = Depends(),
         user: dict = Depends(security_jwt)
@@ -84,7 +85,7 @@ async def delete_rating(
             response_model=MovieAverageRating,
             description="Получить средний рейтинг фильма")
 async def get_movie_average_rating(
-        movie_id: str,
+        movie_id: UUID,
         service: RatingService = Depends(get_rating_service),
         Authorize: AuthJWT = Depends(),
         user: dict = Depends(security_jwt)
