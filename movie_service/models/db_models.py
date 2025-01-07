@@ -35,3 +35,13 @@ class reviewsCollection(Document):
 
     class Settings:
         collection = 'reviewsCollection'
+
+
+class ratingsCollection(Document):
+    user_id: uuid.UUID
+    movie_id: uuid.UUID
+    rating: int
+    created_at: datetime
+
+    class Settings:
+        collection = 'ratingsCollection'

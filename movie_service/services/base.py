@@ -58,7 +58,7 @@ class RepositoryMongo(Repository, Generic[ModelType, PaginatedModel]):
     async def get_multy(
             self,
             film_id: UUID,
-            params: SearchParams
+            params: SearchParams | None
     ) -> List[Type[PaginatedModel]] or None:
         offset = params.page_size * params.page_number - params.page_size
         data = await self._model.find(
