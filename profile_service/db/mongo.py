@@ -5,7 +5,7 @@ from enum import Enum
 
 from core.config import settings
 
-client = AsyncIOMotorClient(settings.mongo_db.url)
+client = AsyncIOMotorClient(settings.mongo_db.url, uuidRepresentation='standard')
 mongo_db = client[settings.mongo_db.default_database]
 
 

@@ -8,7 +8,7 @@ from schemas.bookmarks import (
 from services.bookmarks import BookmarkService, get_bookmark_service
 from async_fastapi_jwt_auth import AuthJWT
 from dependencies.auth import security_jwt
-
+from uuid import UUID
 from utils.enums import BookmarkType
 
 router = APIRouter()
@@ -62,7 +62,7 @@ async def get_bookmarks(
 @router.delete("/bookmark/{movie_id}",
                status_code=status.HTTP_204_NO_CONTENT)
 async def remove_bookmark(
-        movie_id: str,
+        movie_id: UUID,
         service: BookmarkService = Depends(get_bookmark_service),
         Authorize: AuthJWT = Depends(),
         user: dict = Depends(security_jwt)
@@ -75,7 +75,7 @@ async def remove_bookmark(
 
 @router.patch("/bookmark/{movie_id}")
 async def update_bookmark(
-        movie_id: str,
+        movie_id: UUID,
         bookmark: BookmarkUpdate,
         service: BookmarkService = Depends(get_bookmark_service),
         Authorize: AuthJWT = Depends(),
