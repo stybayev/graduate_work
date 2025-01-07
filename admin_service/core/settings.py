@@ -35,6 +35,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'profiles.apps.ProfilesConfig',
 ]
 
 MIDDLEWARE = [
@@ -72,8 +74,12 @@ WSGI_APPLICATION = 'core.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('DB_PROFILE_SERVICE_DB', 'profile_service'),
+        'USER': os.getenv('DB_PROFILE_SERVICE_USER', 'profile_service'),
+        'PASSWORD': os.getenv('DB_PROFILE_SERVICE_PASSWORD', 'profile_service'),
+        'HOST': os.getenv('DB_PROFILE_SERVICE_HOST', 'db'),
+        'PORT': os.getenv('DB_PROFILE_SERVICE_PORT', '5432'),
     }
 }
 
