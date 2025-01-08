@@ -9,7 +9,7 @@ class FilmDto(BaseModel):
     id: UUID
     title: str
     description: str
-    imdb_rating: float | None
+    imdb_rating: float
     genre: List[str]
     actors_names: List[str]
     writers_names: List[str]

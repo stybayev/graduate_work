@@ -39,7 +39,8 @@ async def get_reviews(
         service: FilmServiceABC = Depends(),
         film_id: UUID,
         page_size: int = 5,
-        page_number: int = 1
+        page_number: int = 1,
+        sort: str | None = "-created_at",
 ) -> List[ReviewsDto] or None:
     """
     Получение всех рецензий фильма по идентификатору фильма
@@ -49,6 +50,7 @@ async def get_reviews(
     reviews = await service.get_reviews(
         film_id,
         params=SearchParams(
+            sort=sort,
             page_size=page_size,
             page_number=page_number
         )
@@ -67,7 +69,8 @@ async def get_ratings(
         service: FilmServiceABC = Depends(),
         film_id: UUID,
         page_size: int = 5,
-        page_number: int = 1
+        page_number: int = 1,
+        sort: str | None = "-rating"
 ) -> List[RatingsDto] or None:
     """
     Получение всех оценок для фильма по идентификатору фильма
@@ -78,7 +81,8 @@ async def get_ratings(
         film_id,
         params=SearchParams(
             page_size=page_size,
-            page_number=page_number
+            page_number=page_number,
+            sort=sort
         )
     )
     if not ratings:

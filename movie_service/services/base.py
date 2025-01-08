@@ -63,7 +63,7 @@ class RepositoryMongo(Repository, Generic[ModelType, PaginatedModel]):
         offset = params.page_size * params.page_number - params.page_size
         data = await self._model.find(
             self._model.movie_id == film_id
-        ).skip(offset).limit(params.page_size).to_list()
+        ).skip(offset).limit(params.page_size).sort(params.sort).to_list()
         models = []
         for entity in data:
             models.append(

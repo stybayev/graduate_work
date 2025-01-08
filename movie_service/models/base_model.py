@@ -1,5 +1,6 @@
 from fastapi import Query
 from pydantic import BaseModel
+from typing import Optional
 
 
 class PaginatedParams(BaseModel):
@@ -8,4 +9,4 @@ class PaginatedParams(BaseModel):
 
 
 class SearchParams(PaginatedParams):
-    pass
+    sort: Optional[str]
