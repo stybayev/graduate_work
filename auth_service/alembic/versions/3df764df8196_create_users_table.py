@@ -43,6 +43,10 @@ def upgrade() -> None:
         sa.Column("first_name", sa.String(length=50), nullable=True),
         sa.Column("last_name", sa.String(length=50), nullable=True),
         sa.Column("created_at", sa.DateTime(), nullable=True),
+        sa.Column('is_active', sa.Boolean(), nullable=True),
+        sa.Column('is_staff', sa.Boolean(), nullable=True),
+        sa.Column('is_superuser', sa.Boolean(), nullable=True),
+
         sa.PrimaryKeyConstraint("id"),
         sa.UniqueConstraint("id"),
         sa.UniqueConstraint("login"),

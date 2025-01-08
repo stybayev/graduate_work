@@ -80,6 +80,9 @@ class UserService:
             password=password,
             first_name=first_name,
             last_name=last_name,
+            is_active=True,
+            is_superuser=False,
+            is_staff=False,
         )
         with tracer.start_as_current_span("add_user_postgres_request"):
             self.db_session.add(new_user)

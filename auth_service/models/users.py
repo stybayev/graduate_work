@@ -1,7 +1,8 @@
 import uuid
 from datetime import datetime
+from xmlrpc.client import Boolean
 
-from sqlalchemy import ARRAY, Column, DateTime, ForeignKey, String, UniqueConstraint
+from sqlalchemy import ARRAY, Column, DateTime, ForeignKey, String, UniqueConstraint, Boolean as Bool
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -32,6 +33,9 @@ class User(Base):
     first_name = Column(String(50), nullable=True)
     last_name = Column(String(50), nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
+    is_active = Column(Bool, default=True, nullable=True)
+    is_staff = Column(Bool, default=False, nullable=True)
+    is_superuser = Column(Bool, default=False, nullable=True)
 
     roles = relationship("Role", secondary="auth.user_roles", back_populates="users")
     login_history = relationship(
@@ -42,18 +46,25 @@ class User(Base):
     )
 
     def __init__(
-        self,
-        login: str,
-        email: str,
-        password: str,
-        first_name: str,
-        last_name: str,
+            self,
+            login: str,
+            email: str,
+            password: str,
+            first_name: str,
+            last_name: str,
+            is_active: bool,
+            is_superuser: bool,
+            is_staff: bool,
+
     ) -> None:
         self.login = login
         self.email = email
         self.password = generate_password_hash(password)
         self.first_name = first_name
         self.last_name = last_name
+        self.is_active = is_active
+        self.is_superuser = is_superuser
+        self.is_staff = is_staff
 
     def check_password(self, password: str) -> bool:
         return check_password_hash(self.password, password)
