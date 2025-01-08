@@ -12,7 +12,7 @@ class UserProfile(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'profiles_service.profiles'
+        db_table = 'profiles_service"."profiles'
 
     def __str__(self):
         return f"{self.full_name} ({self.phone_number})"
