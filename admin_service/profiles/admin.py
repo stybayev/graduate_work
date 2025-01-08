@@ -14,17 +14,13 @@ class UserProfileAdmin(admin.ModelAdmin):
     ordering = ('-created_at',)
 
     def has_view_permission(self, request, obj=None):
-        # Проверяем наличие специального разрешения на просмотр профилей
         return request.user.has_perm('profiles.view_userprofile')
 
     def has_change_permission(self, request, obj=None):
-        # Запрещаем изменение профилей через админку
         return False
 
     def has_delete_permission(self, request, obj=None):
-        # Запрещаем удаление профилей через админку
         return False
 
     def has_add_permission(self, request):
-        # Запрещаем создание профилей через админку
         return False

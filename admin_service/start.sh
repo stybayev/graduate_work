@@ -12,6 +12,10 @@ echo "Database $POSTGRES_HOST:$POSTGRES_PORT is up and running!"
 python manage.py collectstatic --no-input
 python manage.py migrate
 
+# Загружаем фикстуру с админом и правами
+python manage.py loaddata profiles/fixtures/admin_user
+echo "Admin user fixture loaded successfully!"
+
 # Запускаем сервер приложения
 echo "Запуск Uvicorn сервера"
 
