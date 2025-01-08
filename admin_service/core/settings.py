@@ -29,6 +29,7 @@ ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(',')
 # Application definition
 
 INSTALLED_APPS = [
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -37,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'profiles',
+    'custom_auth',
 ]
 
 MIDDLEWARE = [
@@ -80,8 +82,18 @@ DATABASES = {
         'PASSWORD': os.getenv('DB_PROFILE_SERVICE_PASSWORD', 'profile_service'),
         'HOST': os.getenv('DB_PROFILE_SERVICE_HOST', 'db'),
         'PORT': os.getenv('DB_PROFILE_SERVICE_PORT', '5432'),
+    },
+    'auth_db': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('POSTGRES_DB', 'postgres'),
+        'USER': os.getenv('POSTGRES_USER', 'postgres'),
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'postgres'),
+        'HOST': os.getenv('POSTGRES_HOST', 'db'),
+        'PORT': os.getenv('POSTGRES_PORT', '5432'),
     }
 }
+
+DATABASE_ROUTERS = ['custom_auth.routers.AuthRouter']
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -122,3 +134,5 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+# AUTH_USER_MODEL = "custom_auth.User"
+AUTH_API_LOGIN_URL = f"http://{os.getenv('AUTH_API_UVICORN_HOST')}:{os.getenv('AUTH_API_UVICORN_PORT')}/api/v1/auth/users/login"

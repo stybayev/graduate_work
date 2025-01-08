@@ -1,8 +1,6 @@
 from django.contrib import admin
-from django.contrib.auth.models import Permission
-from django.contrib.contenttypes.models import ContentType
-from django.core.exceptions import PermissionDenied
 from .models import UserProfile
+from werkzeug.security import generate_password_hash
 
 
 @admin.register(UserProfile)
