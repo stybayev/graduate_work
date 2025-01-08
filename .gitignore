@@ -29,3 +29,8 @@ ELK/
 
 # tmp
 tmp/
+
+# static
+static/
+*/static/
+*static/
