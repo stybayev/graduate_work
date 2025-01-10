@@ -6,7 +6,7 @@ import redis.asyncio as redis
 import sentry_sdk
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.responses import JSONResponse
-
+import aiohttp
 from rate_limit.sentry_hook import before_send
 
 sentry_sdk.init(
