@@ -2,8 +2,7 @@ import datetime
 import logging
 import os
 
-import aiohttp
-import aioredis
+import redis.asyncio as redis
 import sentry_sdk
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.responses import JSONResponse
@@ -25,7 +24,7 @@ REQUEST_LIMIT_PER_MINUTE = 20  # Установим лимит на 20 запр�
 EXPIRED_TIME = 59  # Время жизни ключей
 # Хранилище запросов
 REDIS_URL = f"redis://{os.getenv('REDIS_HOST')}:{os.getenv('REDIS_PORT')}"
-redis_conn = aioredis.from_url(REDIS_URL, decode_responses=True)
+redis_conn = redis.from_url(REDIS_URL, decode_responses=True)
 
 SERVICE_MAP = {
     "/api/auth": "http://auth:8082",

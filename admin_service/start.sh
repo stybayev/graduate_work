@@ -17,6 +17,7 @@ python manage.py loaddata profiles/fixtures/admin_user
 echo "Admin user fixture loaded successfully!"
 
 # Запускаем сервер приложения
-echo "Запуск Uvicorn сервера"
+echo "Запуск Daphne сервера"
 
-uvicorn core.asgi:application --host 0.0.0.0 --port 8080 --reload --log-level debug
+# uvicorn core.asgi:application --host 0.0.0.0 --port 8080 --reload --log-level debug
+daphne -b 0.0.0.0 -p 8080 core.asgi:application
