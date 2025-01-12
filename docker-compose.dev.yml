@@ -10,6 +10,7 @@ volumes:
   redis_data:
   es_logs:
   esdata:
+  static_volume:
 
 services:
   auth:
@@ -159,6 +160,7 @@ services:
       - ./infrastructure/tmp/logs/nginx/:/var/log/nginx/
       - ./infrastructure/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./infrastructure/nginx/configs/:/etc/nginx/conf.d/:ro
+      - static_volume:/code/staticfiles
     depends_on:
       - auth
       - rate_limit
@@ -274,6 +276,7 @@ services:
     container_name: admin_service
     volumes:
       - ./admin_service:/code
+      - static_volume:/code/staticfiles
     ports:
       - "8080:8080"
     command: /start.sh
