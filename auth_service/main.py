@@ -52,7 +52,7 @@ if settings.enable_tracing:
 
 app.add_exception_handler(AuthJWTException, authjwt_exception_handler)
 
-app.middleware("http")(before_request)
+# app.middleware("http")(before_request)
 app.middleware("http")(check_blacklist)
 
 app.include_router(users.router, prefix="/api/v1/auth/users", tags=["users"])
